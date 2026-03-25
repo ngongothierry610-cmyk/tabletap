@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kitchen Display — Table Tap</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Barlow:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --bg:        #0f0f0f;
+      --surface:   #171717;
+      --surface2:  #1e1e1e;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #f0f0f0;
+      --muted:     #666;
+      --new:       #3b82f6;
+      --new2:      rgba(59,130,246,0.12);
+      --prep:      #f59e0b;
+      --prep2:     rgba(245,158,11,0.12);
+      --ready:     #22c55e;
+      --ready2:    rgba(34,197,94,0.12);
+      --served:    #444;
+      --served2:   rgba(255,255,255,0.04);
+      --font-d:    'Barlow', sans-serif;
+      --font-m:    'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-d);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─────────────────────────────
+       TOP BAR
+    ───────────────────────────── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-family: var(--font-d);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .logo span { color: #f59e0b; }
+
+    .kitchen-label {
+      font-family: var(--font-m);
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .topbar-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Status filter tabs */
+    .status-tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      font-family: var(--font-d);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .status-tab .count {
+      font-family: var(--font-m);
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: var(--surface2);
+    }
+
+    .status-tab:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    .status-tab.new.on    { background: var(--new2);   border-color: rgba(59,130,246,0.4);  color: var(--new);  }
+    .status-tab.prep.on   { background: var(--prep2);  border-color: rgba(245,158,11,0.4);  color: var(--prep); }
+    .status-tab.ready.on  { background: var(--ready2); border-color: rgba(34,197,94,0.4);   color: var(--ready);}
+    .status-tab.served.on { background: var(--served2);border-color: rgba(255,255,255,0.1); color: #888;        }
+    .status-tab.all.on    { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    .status-tab.new.on .count    { background: rgba(59,130,246,0.2);  color: var(--new);  }
+    .status-tab.prep.on .count   { background: rgba(245,158,11,0.2);  color: var(--prep); }
+    .status-tab.ready.on .count  { background: rgba(34,197,94,0.2);   color: var(--ready);}
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .clock {
+      font-family: var(--font-m);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+
+    .clock-date {
+      font-family: var(--font-m);
+      font-size: 0.6rem;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 1px;
+    }
+
+    .topbar-btn {
+      font-family: var(--font-d);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .topbar-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ─────────────────────────────
+       STATS STRIP
+    ───────────────────────────── */
+    .stats-strip {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .strip-stat {
+      flex: 1;
+      background: var(--surface);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .strip-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .strip-dot.new   { background: var(--new);   box-shadow: 0 0 6px var(--new); }
+    .strip-dot.prep  { background: var(--prep);  box-shadow: 0 0 6px var(--prep); }
+    .strip-dot.ready { background: var(--ready); box-shadow: 0 0 6px var(--ready); }
+    .strip-dot.done  { background: var(--muted); }
+
+    .strip-num {
+      font-family: var(--font-m);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .strip-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ─────────────────────────────
+       KANBAN COLUMNS
+    ───────────────────────────── */
+    .kanban {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .column {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .column-header {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .column-header.new-col   { border-bottom-color: var(--new); }
+    .column-header.prep-col  { border-bottom-color: var(--prep); }
+    .column-header.ready-col { border-bottom-color: var(--ready); }
+    .column-header.done-col  { border-bottom-color: var(--served); }
+
+    .col-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .col-title.new-col   { color: var(--new); }
+    .col-title.prep-col  { color: var(--prep); }
+    .col-title.ready-col { color: var(--ready); }
+    .col-title.done-col  { color: var(--muted); }
+
+    .col-count {
+      font-family: var(--font-m);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .col-count.new-col   { background: var(--new2);   color: var(--new); }
+    .col-count.prep-col  { background: var(--prep2);  color: var(--prep); }
+    .col-count.ready-col { background: var(--ready2); color: var(--ready); }
+    .col-count.done-col  { background: var(--served2);color: var(--muted); }
+
+    .column-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .column-body::-webkit-scrollbar { width: 4px; }
+    .column-body::-webkit-scrollbar-track { background: transparent; }
+    .column-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ─────────────────────────────
+       ORDER CARDS
+    ───────────────────────────── */
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: slideIn 0.3s ease both;
+    }
+
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Left accent bar by status */
+    .order-card.new-card   { border-left: 3px solid var(--new); }
+    .order-card.prep-card  { border-left: 3px solid var(--prep); }
+    .order-card.ready-card { border-left: 3px solid var(--ready); }
+    .order-card.done-card  { border-left: 3px solid var(--served); opacity: 0.55; }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-table {
+      font-family: var(--font-m);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .card-time {
+      font-family: var(--font-m);
+      font-size: 0.62rem;
+      color: var(--muted);
+    }
+
+    .card-timer {
+      font-family: var(--font-m);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .card-timer.urgent { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .card-timer.normal { background: var(--prep2); color: var(--prep); }
+    .card-timer.fresh  { background: var(--new2);  color: var(--new); }
+    .card-timer.ok     { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+    /* Items list */
+    .card-items {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.82rem;
+    }
+
+    .item-qty {
+      font-family: var(--font-m);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--prep);
+      min-width: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .item-name-k {
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .item-note {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 2px;
+      font-style: italic;
+    }
+
+    /* Card footer with action button */
+    .card-foot {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-order-id {
+      font-family: var(--font-m);
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .card-action {
+      font-family: var(--font-d);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .card-action.new-action {
+      background: var(--new2);
+      color: var(--new);
+      border: 1px solid rgba(59,130,246,0.25);
+    }
+
+    .card-action.new-action:hover { background: var(--new); color: #fff; }
+
+    .card-action.prep-action {
+      background: var(--prep2);
+      color: var(--prep);
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+
+    .card-action.prep-action:hover { background: var(--prep); color: #000; }
+
+    .card-action.ready-action {
+      background: var(--ready2);
+      color: var(--ready);
+      border: 1px solid rgba(34,197,94,0.25);
+    }
+
+    .card-action.ready-action:hover { background: var(--ready); color: #000; }
+
+    .card-action.done-action {
+      background: var(--served2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      cursor: default;
+    }
+
+    /* Empty column state */
+    .col-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      gap: 10px;
+      opacity: 0.5;
+    }
+
+    .col-empty-icon { font-size: 2rem; }
+
+    /* ─────────────────────────────
+       ALERT BANNER (urgent order)
+    ───────────────────────────── */
+    .alert-banner {
+      background: rgba(239,68,68,0.1);
+      border-bottom: 1px solid rgba(239,68,68,0.25);
+      padding: 8px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { background: rgba(239,68,68,0.08); }
+      50%       { background: rgba(239,68,68,0.16); }
+    }
+
+    .alert-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: blink 1s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+
+    .alert-text {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fca5a5;
+    }
+
+    .alert-text strong { color: #ef4444; }
+
+    .alert-dismiss {
+      margin-left: auto;
+      font-size: 0.68rem;
+      color: rgba(252,165,165,0.6);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-d);
+    }
+
+    .alert-dismiss:hover { color: #fca5a5; }
+
+  </style>
+</head>
+<body>
+<!-- TOP BAR -->
+<div class="topbar">
+<div class="topbar-left">
+<div class="logo">Table<span>Tap</span></div>
+<div class="kitchen-label">Kitchen Display</div>
+</div>
+<div class="topbar-center">
+<button class="status-tab all on" onclick="filterCards('all', this)">
+        All <span class="count">9</span>
+</button>
+<button class="status-tab new" onclick="filterCards('new', this)">
+        🔵 New <span class="count">2</span>
+</button>
+<button class="status-tab prep" onclick="filterCards('prep', this)">
+        🟡 Preparing <span class="count">3</span>
+</button>
+<button class="status-tab ready" onclick="filterCards('ready', this)">
+        🟢 Ready <span class="count">2</span>
+</button>
+<button class="status-tab served" onclick="filterCards('served', this)">
+        ⚫ Served <span class="count">2</span>
+</button>
+</div>
+<div class="topbar-right">
+<a class="topbar-btn" href="dashboard.html">← Dashboard</a>
+      <button onclick="signOut()" class="topbar-btn" style="color:#f59e0b;border-color:rgba(245,158,11,0.3)">Sign out</button>
+<div>
+<div class="clock" id="clock">00:00:00</div>
+<div class="clock-date" id="clock-date">Saturday, 14 Mar</div>
+</div>
+</div>
+</div>
+<!-- ALERT BANNER -->
+<div class="alert-banner" id="alertBanner">
+<div class="alert-dot"></div>
+<div class="alert-text"><strong>Table 7</strong> — Order waiting 18 mins with no action. Mark as Preparing.</div>
+<button class="alert-dismiss" onclick="document.getElementById('alertBanner').style.display='none'">Dismiss ✕</button>
+</div>
+<!-- STATS STRIP -->
+<div class="stats-strip">
+<div class="strip-stat">
+<div class="strip-dot new"></div>
+<div>
+<div class="strip-num">2</div>
+<div class="strip-label">New Orders</div>
+</div>
+</div>
+<div class="strip-stat">
+<div class="strip-dot prep"></div>
+<div>
+<div class="strip-num">3</div>
+<div class="strip-label">Preparing</div>
+</div>
+</div>
+<div class="strip-stat">
+<div class="strip-dot ready"></div>
+<div>
+<div class="strip-num">2</div>
+<div class="strip-label">Ready to Serve</div>
+</div>
+</div>
+<div class="strip-stat">
+<div class="strip-dot done"></div>
+<div>
+<div class="strip-num">2</div>
+<div class="strip-label">Served Today</div>
+</div>
+</div>
+<div class="strip-stat" style="flex:2">
+<div class="strip-dot" style="background:#a855f7;box-shadow:0 0 6px #a855f7"></div>
+<div>
+<div class="strip-num">24</div>
+<div class="strip-label">Total Orders Today</div>
+</div>
+</div>
+</div>
+<!-- KANBAN -->
+<div class="kanban">
+<!-- NEW -->
+<div class="column">
+<div class="column-header new-col">
+<span class="col-title new-col">🔵 New</span>
+<span class="col-count new-col">2</span>
+</div>
+<div class="column-body" id="col-new">
+
+
+</div>
+</div>
+<!-- PREPARING -->
+<div class="column">
+<div class="column-header prep-col">
+<span class="col-title prep-col">🟡 Preparing</span>
+<span class="col-count prep-col">3</span>
+</div>
+<div class="column-body" id="col-prep">
+
+
+
+</div>
+</div>
+<!-- READY -->
+<div class="column">
+<div class="column-header ready-col">
+<span class="col-title ready-col">🟢 Ready to Serve</span>
+<span class="col-count ready-col">2</span>
+</div>
+<div class="column-body" id="col-ready">
+
+
+</div>
+</div>
+<!-- SERVED -->
+<div class="column">
+<div class="column-header done-col">
+<span class="col-title done-col">⚫ Served</span>
+<span class="col-count done-col">2</span>
+</div>
+<div class="column-body" id="col-done">
+
+
+</div>
+</div>
+</div><!-- end kanban -->
+<script>
+    function updateClock() {
+      const now = new Date();
+      const el  = document.getElementById('clock');
+      if (el) el.textContent =
+        String(now.getHours()).padStart(2,'0') + ':' +
+        String(now.getMinutes()).padStart(2,'0') + ':' +
+        String(now.getSeconds()).padStart(2,'0');
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    document.querySelectorAll('.status-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('on'));
+        this.classList.add('on');
+      });
+    });
+  </script>
+<script src="auth.js"></script>
+<script>requireKitchenAuth();</script>
+<script src="kitchen.js"></script>
+</body>
+</html>

@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Tap — Digital Menus for Modern Restaurants</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+
+    /* ── Variables ── */
+    :root {
+      --bg:        #f9f7f4;
+      --white:     #ffffff;
+      --ink:       #16130f;
+      --ink2:      #4a4640;
+      --muted:     #9c9690;
+      --border:    #e8e4de;
+      --accent:    #d4500a;
+      --accent2:   rgba(212, 80, 10, 0.08);
+      --green:     #1a7a4a;
+      --green2:    rgba(26, 122, 74, 0.08);
+      --card:      #ffffff;
+      --font-d:    'Instrument Serif', serif;
+      --font-b:    'Figtree', sans-serif;
+      --radius:    12px;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-b);
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Utility ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .label::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(249,247,244,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .logo {
+      font-family: var(--font-d);
+      font-size: 1.5rem;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .logo span { color: var(--accent); font-style: italic; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink2);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-ghost {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink2);
+      padding: 9px 18px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-ghost:hover { background: var(--border); }
+
+    .btn-primary {
+      font-family: var(--font-b);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      padding: 10px 22px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-large {
+      font-size: 0.95rem;
+      padding: 14px 32px;
+      border-radius: 10px;
+    }
+
+    .btn-outline {
+      font-family: var(--font-b);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--ink);
+      background: transparent;
+      padding: 13px 28px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .btn-outline:hover { border-color: var(--ink2); background: var(--white); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle dot grid background */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, #ccc8c0 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.35;
+      z-index: 0;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(249,247,244,0) 0%, var(--bg) 75%);
+      z-index: 0;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 6px 16px 6px 8px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--ink2);
+      margin-bottom: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .hero-badge-dot {
+      width: 20px;
+      height: 20px;
+      background: var(--accent2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-d);
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      max-width: 780px;
+      margin: 0 auto 24px;
+      animation: fadeDown 0.6s 0.1s ease both;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--ink2);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      font-weight: 300;
+      animation: fadeDown 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 64px;
+      animation: fadeDown 0.6s 0.3s ease both;
+    }
+
+    /* Mock browser window showing menu.html */
+    .hero-mockup {
+      max-width: 860px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06);
+      overflow: hidden;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    .mockup-bar {
+      background: #f1ede8;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mockup-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .mockup-dots span:nth-child(1) { background: #ff6059; }
+    .mockup-dots span:nth-child(2) { background: #ffbd2e; }
+    .mockup-dots span:nth-child(3) { background: #29c940; }
+
+    .mockup-url {
+      flex: 1;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .mockup-screen {
+      background: #0c0b09;
+      padding: 0;
+      height: 340px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Mini menu preview inside mockup */
+    .mini-hero {
+      background: linear-gradient(to bottom, rgba(12,11,9,0.3), rgba(12,11,9,0.9)),
+                  url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=70') center/cover;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .mini-hero p:first-child {
+      font-size: 0.45rem;
+      letter-spacing: 0.3em;
+      color: #c9a84c;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .mini-hero p:last-child {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .mini-tabs {
+      background: rgba(12,11,9,0.96);
+      border-bottom: 1px solid rgba(201,168,76,0.18);
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      padding: 8px 12px;
+    }
+
+    .mini-tab {
+      font-size: 0.5rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: #7a7468;
+      border: 1px solid transparent;
+      font-family: var(--font-b);
+      letter-spacing: 0.08em;
+    }
+
+    .mini-tab.on {
+      background: rgba(201,168,76,0.12);
+      border-color: rgba(201,168,76,0.4);
+      color: #c9a84c;
+    }
+
+    .mini-cards {
+      display: flex;
+      gap: 10px;
+      padding: 16px 20px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .mini-card {
+      flex: 1;
+      background: #161410;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .mini-card-img {
+      height: 70px;
+      background: #221f18;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .mini-card-body {
+      padding: 8px 10px;
+    }
+
+    .mini-card-tag { font-size: 0.38rem; color: #c9a84c; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 3px; }
+    .mini-card-name { font-family: 'Instrument Serif', serif; font-size: 0.6rem; color: #ede8df; margin-bottom: 4px; }
+    .mini-card-price { font-size: 0.5rem; color: #c9a84c; }
+
+    /* ── LOGOS BAR ── */
+    .logos-bar {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .logos-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .logos-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .logo-item {
+      font-family: var(--font-d);
+      font-size: 1.1rem;
+      color: #ccc8c0;
+      font-style: italic;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      padding: 100px 0;
+    }
+
+    .how-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .section-title {
+      font-family: var(--font-d);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+
+    .section-title em { font-style: italic; color: var(--accent); }
+
+    .section-sub {
+      font-size: 0.95rem;
+      color: var(--ink2);
+      margin-top: 12px;
+      font-weight: 300;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .step {
+      background: var(--white);
+      padding: 48px 36px;
+      position: relative;
+    }
+
+    .step-num {
+      font-family: var(--font-d);
+      font-size: 3.5rem;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .step-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .step h3 {
+      font-family: var(--font-d);
+      font-size: 1.35rem;
+      font-weight: 400;
+      margin-bottom: 10px;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--ink2);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    .step-connector {
+      position: absolute;
+      top: 52px;
+      right: -18px;
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.8rem;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(212,80,10,0.3);
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 0;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-header {
+      max-width: 560px;
+      margin-bottom: 64px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .feature {
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+    }
+
+    .feature:hover {
+      box-shadow: 0 12px 32px rgba(0,0,0,0.07);
+      transform: translateY(-3px);
+      border-color: #d4cdc4;
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 18px;
+    }
+
+    .feature h4 {
+      font-family: var(--font-d);
+      font-size: 1.15rem;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      font-size: 0.82rem;
+      color: var(--ink2);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ── PRICING ── */
+    .pricing {
+      padding: 100px 0;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .plan {
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 32px;
+      position: relative;
+      transition: box-shadow 0.25s;
+    }
+
+    .plan:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.07); }
+
+    .plan.featured {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent2);
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: white;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .plan-price {
+      font-family: var(--font-d);
+      font-size: 3rem;
+      font-weight: 400;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .plan-price sup {
+      font-size: 1.2rem;
+      vertical-align: top;
+      margin-top: 6px;
+      font-family: var(--font-b);
+      font-weight: 500;
+    }
+
+    .plan-period {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .plan-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 24px;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--ink2);
+      font-weight: 300;
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      color: var(--green);
+      font-weight: 600;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .plan-features li.off { color: var(--muted); }
+    .plan-features li.off::before { content: '–'; color: var(--border); }
+
+    .plan-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-family: var(--font-b);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .plan-btn:hover { border-color: var(--ink2); background: var(--bg); }
+
+    .plan.featured .plan-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .plan.featured .plan-btn:hover { opacity: 0.88; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      padding: 100px 0;
+      background: var(--ink);
+      text-align: center;
+    }
+
+    .cta-banner h2 {
+      font-family: var(--font-d);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 400;
+      color: #fff;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-banner h2 em { font-style: italic; color: #f0a060; }
+
+    .cta-banner p {
+      font-size: 0.95rem;
+      color: #9c9690;
+      max-width: 480px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .btn-light {
+      font-family: var(--font-b);
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--ink);
+      background: #fff;
+      padding: 14px 32px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-light:hover { opacity: 0.88; }
+
+    .btn-ghost-light {
+      font-family: var(--font-b);
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      padding: 14px 32px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-ghost-light:hover { background: rgba(255,255,255,0.14); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: var(--font-d);
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .footer-logo span { color: #f0a060; font-style: italic; }
+
+    .footer-note {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .steps { grid-template-columns: 1fr; }
+      .step-connector { display: none; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 0 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 64px 0 48px; }
+      .hero-actions { flex-direction: column; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
+      .cta-actions { flex-direction: column; align-items: center; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo">Table<span>Tap</span></div>
+      <ul class="nav-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="btn-ghost">Sign in</a>
+        <button class="btn-primary" onclick="window.location.href='login.html?tab=signup'">Get started free</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="container hero-inner">
+
+      <div class="hero-badge">
+        <span class="hero-badge-dot">✦</span>
+        Built for restaurants in Africa
+      </div>
+
+      <h1>Your menu, <em>digital</em><br>and always ready</h1>
+
+      <p class="hero-sub">
+        Table Tap turns your menu into a beautiful digital experience.
+        Customers scan a QR code, browse, and order — no app download needed.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary btn-large" onclick="window.location.href='login.html?tab=signup'">Get started free →</button>
+        <button class="btn-outline" onclick="window.open('menu.html')">See live demo</button>
+      </div>
+
+      <!-- Browser Mockup -->
+      <div class="hero-mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="mockup-url">tabletap.rw/menu/chilli-restaurant</div>
+        </div>
+        <div class="mockup-screen">
+          <div class="mini-hero">
+            <p>Table Tap — Digital Menu</p>
+            <p>Chilli Restaurant</p>
+          </div>
+          <div class="mini-tabs">
+            <div class="mini-tab on">🍽️ All</div>
+            <div class="mini-tab">🍷 Drinks</div>
+            <div class="mini-tab">🥗 Appetizer</div>
+            <div class="mini-tab">🍖 Main Course</div>
+            <div class="mini-tab">🍮 Dessert</div>
+          </div>
+          <div class="mini-cards">
+            <div class="mini-card">
+              <div class="mini-card-img">🥩</div>
+              <div class="mini-card-body">
+                <p class="mini-card-tag">Beef</p>
+                <p class="mini-card-name">Ribeye au Poivre</p>
+                <p class="mini-card-price">28,000 RWF</p>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-img">🐟</div>
+              <div class="mini-card-body">
+                <p class="mini-card-tag">Seafood</p>
+                <p class="mini-card-name">Pan-Seared Salmon</p>
+                <p class="mini-card-price">22,000 RWF</p>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-img">🍫</div>
+              <div class="mini-card-body">
+                <p class="mini-card-tag">Dessert</p>
+                <p class="mini-card-name">Fondant Chocolat</p>
+                <p class="mini-card-price">7,500 RWF</p>
+              </div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-card-img">🥂</div>
+              <div class="mini-card-body">
+                <p class="mini-card-tag">Sparkling</p>
+                <p class="mini-card-name">Champagne Brut</p>
+                <p class="mini-card-price">18,000 RWF</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── LOGOS ── -->
+  <section class="logos-bar">
+    <div class="container">
+      <p class="logos-label">Trusted by restaurants across Rwanda</p>
+      <div class="logos-row">
+        <span class="logo-item">Kigali Grill</span>
+        <span class="logo-item">Fusion House</span>
+        <span class="logo-item">Chilli Restaurant</span>
+        <span class="logo-item">The Serena</span>
+        <span class="logo-item">Repub Lounge</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ── -->
+  <section class="how" id="how">
+    <div class="container">
+      <div class="how-header">
+        <p class="label">Simple process</p>
+        <h2 class="section-title">Up and running in<br><em>three steps</em></h2>
+        <p class="section-sub">No technical knowledge needed. We handle everything.</p>
+      </div>
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-icon">🍽️</div>
+          <h3>Add your menu</h3>
+          <p>Upload your dishes, prices, and photos through a simple dashboard. Organise by category — drinks, starters, mains, desserts.</p>
+          <div class="step-connector">→</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-icon">📱</div>
+          <h3>Print your QR code</h3>
+          <p>We generate a unique QR code for your restaurant — or per table. Print it, stick it, and you're live. No app needed for customers.</p>
+          <div class="step-connector">→</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-icon">✅</div>
+          <h3>Customers order</h3>
+          <p>Guests scan, browse your beautiful menu, and place orders directly. Orders appear on your kitchen screen instantly.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ── -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header">
+        <p class="label">Everything you need</p>
+        <h2 class="section-title">Built for how<br><em>restaurants actually work</em></h2>
+        <p class="section-sub">Every feature designed around the real challenges of running a restaurant.</p>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature">
+          <div class="feature-icon">📲</div>
+          <h4>QR-based ordering</h4>
+          <p>Customers scan a QR code at their table and browse your full menu instantly — no downloads, no friction.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎨</div>
+          <h4>Beautiful menu design</h4>
+          <p>Your menu looks stunning on any phone. Customise colours, photos, and categories to match your brand.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h4>Real-time updates</h4>
+          <p>Change prices, mark items as sold out, or add daily specials instantly — no reprinting required.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🧾</div>
+          <h4>Order management</h4>
+          <p>Orders go straight to your kitchen screen. Reduce errors, speed up service, keep staff focused.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📊</div>
+          <h4>Sales analytics</h4>
+          <p>See your best-selling dishes, peak hours, and revenue at a glance. Make smarter menu decisions.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🌍</div>
+          <h4>Multi-language</h4>
+          <p>Serve local and international guests. Your menu can display in English, French, or Kinyarwanda.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PRICING ── -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="pricing-header">
+        <p class="label">Pricing</p>
+        <h2 class="section-title">Simple, <em>honest</em> pricing</h2>
+        <p class="section-sub">No hidden fees. Cancel anytime. Start free.</p>
+      </div>
+      <div class="pricing-grid">
+
+        <!-- Starter -->
+        <div class="plan">
+          <p class="plan-name">Starter</p>
+          <p class="plan-price"><sup>RWF</sup>0</p>
+          <p class="plan-period">Free forever</p>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>1 menu page</li>
+            <li>Up to 20 items</li>
+            <li>QR code generation</li>
+            <li>Basic menu design</li>
+            <li class="off">Order management</li>
+            <li class="off">Analytics dashboard</li>
+            <li class="off">Priority support</li>
+          </ul>
+          <button class="plan-btn" onclick="window.location.href='login.html?tab=signup'">Get started free</button>
+        </div>
+
+        <!-- Pro (featured) -->
+        <div class="plan featured">
+          <div class="plan-badge">Most Popular</div>
+          <p class="plan-name">Pro</p>
+          <p class="plan-price"><sup>RWF</sup>25k</p>
+          <p class="plan-period">per month</p>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>Unlimited menu items</li>
+            <li>Food photos per item</li>
+            <li>QR code per table</li>
+            <li>Custom branding & colours</li>
+            <li>Order management</li>
+            <li>Basic analytics</li>
+            <li class="off">Priority support</li>
+          </ul>
+          <button class="plan-btn" onclick="window.location.href='login.html?tab=signup'">Start 14-day trial</button>
+        </div>
+
+        <!-- Business -->
+        <div class="plan">
+          <p class="plan-name">Business</p>
+          <p class="plan-price"><sup>RWF</sup>60k</p>
+          <p class="plan-period">per month</p>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li>Everything in Pro</li>
+            <li>Multiple locations</li>
+            <li>Advanced analytics</li>
+            <li>Multi-language menus</li>
+            <li>Kitchen display system</li>
+            <li>Inventory tracking</li>
+            <li>Priority support</li>
+          </ul>
+          <button class="plan-btn" onclick="window.location.href='mailto:hello@tabletap.rw'">Contact us</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA BANNER ── -->
+  <section class="cta-banner">
+    <div class="container">
+      <h2>Ready to modernise<br>your <em>restaurant?</em></h2>
+      <p>Join restaurants across Rwanda already using Table Tap. Setup takes less than 10 minutes.</p>
+      <div class="cta-actions">
+        <button class="btn-light" onclick="window.location.href='login.html?tab=signup'">Get started free →</button>
+        <button class="btn-ghost-light" onclick="window.open('menu.html')">See live demo</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── */
+  <footer>
+    <div class="container footer-inner">
+      <div class="footer-logo">Table<span>Tap</span></div>
+      <p class="footer-note">© 2026 TableTap · Built in Rwanda 🇷🇼</p>
+    </div>
+  </footer>
+
+  <script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chilli Restaurant — Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;family=DM+Sans:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    /* ── Variables ── */
+    :root {
+      --bg:       #0c0b09;
+      --card:     #161410;
+      --gold:     #c9a84c;
+      --gold2:    rgba(201,168,76,0.12);
+      --border:   rgba(201,168,76,0.18);
+      --text:     #ede8df;
+      --muted:    #7a7468;
+      --red:      #c0392b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+    }
+
+    /* ── Hero Banner ── */
+    .hero {
+      position: relative;
+      height: 38vh;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      background:
+        linear-gradient(to bottom, rgba(12,11,9,0.3) 0%, rgba(12,11,9,0.85) 100%),
+        url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1400&q=80') center/cover no-repeat;
+    }
+
+    .hero-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 400;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      margin-top: 12px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      color: rgba(237,232,223,0.6);
+    }
+
+    /* ── Sticky Tab Bar ── */
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(12,11,9,0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 14px 24px;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 22px;
+      border: 1px solid transparent;
+      border-radius: 40px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .tab .tab-emoji { font-size: 1rem; }
+
+    .tab:hover {
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .tab.active {
+      background: var(--gold2);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ── Main Content ── */
+    .content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 56px 32px 80px;
+    }
+
+    /* ── Section ── */
+    .section { display: none; }
+    .section.visible { display: block; }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    .section-header h2 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .section-count {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    /* ── Cards Grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      animation: cardIn 0.4s ease both;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+      border-color: var(--border);
+    }
+
+    /* Stagger animation on cards */
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.10s; }
+    .card:nth-child(3) { animation-delay: 0.15s; }
+    .card:nth-child(4) { animation-delay: 0.20s; }
+    .card:nth-child(5) { animation-delay: 0.25s; }
+    .card:nth-child(6) { animation-delay: 0.30s; }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+      background: #1a1814;
+    }
+
+    /* Placeholder when no image */
+    .card-img-placeholder {
+      width: 100%;
+      height: 190px;
+      background: linear-gradient(135deg, #1a1814, #221f18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+
+    .card-body {
+      padding: 20px 22px 22px;
+    }
+
+    .card-tag {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .card-badge {
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .card-badge.chef { border-color: rgba(201,168,76,0.4); color: var(--gold); }
+    .card-badge.spicy { border-color: rgba(192,57,43,0.4); color: #e07060; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer p {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer strong { color: var(--gold); }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .tab span:not(.tab-emoji) { display: none; }
+      .tab { padding: 10px 14px; }
+      .cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .card-img, .card-img-placeholder { height: 140px; }
+      .content { padding: 32px 16px 60px; }
+    }
+
+    @media (max-width: 400px) {
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+  
+    /* ── Add to Cart Button ── */
+    .add-btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(201,168,76,0.35);
+      background: rgba(201,168,76,0.08);
+      color: var(--gold);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+    .add-btn:hover { background: var(--gold); color: #000; }
+    .add-btn.added { background: var(--gold); color: #000; }
+
+    /* ── Cart FAB ── */
+    .cart-fab {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 22px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(201,168,76,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 80;
+      display: none;
+    }
+    .cart-fab:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(201,168,76,0.5); }
+    .fab-count {
+      background: #000;
+      color: var(--gold);
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      margin-left: 4px;
+    }
+
+    /* ── Cart Overlay ── */
+    .cart-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 90;
+    }
+    .cart-overlay.open { display: block; }
+
+    /* ── Cart Drawer ── */
+    .cart-drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: 360px;
+      height: 100vh;
+      background: #111;
+      border-left: 1px solid rgba(201,168,76,0.2);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+    .cart-drawer.open { transform: translateX(0); }
+
+    .cart-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .cart-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .cart-sub { font-size: 0.72rem; color: var(--muted); }
+    .cart-close {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cart-close:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cart-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 40px 0;
+    }
+    .cart-empty span { font-size: 2.5rem; }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 12px 14px;
+      gap: 12px;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .cart-item-price {
+      font-size: 0.72rem;
+      color: var(--gold);
+      font-family: 'Playfair Display', serif;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .qty-btn {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: transparent;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .qty-btn:hover { background: rgba(255,255,255,0.1); }
+    .qty-num {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #fff;
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .cart-footer {
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .cart-total-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+    .place-order-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .place-order-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* Order confirmation */
+    .order-confirm {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .order-confirm.show { display: flex; }
+    .confirm-inner {
+      background: #111;
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 16px;
+      padding: 40px 32px;
+      text-align: center;
+      max-width: 320px;
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+    .confirm-icon { font-size: 3rem; margin-bottom: 16px; }
+    .confirm-inner h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .confirm-inner p { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .confirm-inner button {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 28px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    @media (max-width: 400px) {
+      .cart-drawer { width: 100vw; }
+    }
+
+  </style>
+</head>
+<body>
+<!-- Hero -->
+<div class="hero">
+<p class="hero-label">Table Tap — Digital Menu</p>
+<h1>Chilli <em>Restaurant</em></h1>
+<p class="hero-sub">Scan · Discover · Order</p>
+</div>
+<!-- Tab Bar -->
+<div class="tab-bar">
+<button class="tab active" onclick="showSection('all', this)">
+<span class="tab-emoji">🍽️</span><span>All</span>
+</button>
+<button class="tab" onclick="showSection('drinks', this)">
+<span class="tab-emoji">🍷</span><span>Drinks</span>
+</button>
+<button class="tab" onclick="showSection('appetizer', this)">
+<span class="tab-emoji">🥗</span><span>Appetizer</span>
+</button>
+<button class="tab" onclick="showSection('main', this)">
+<span class="tab-emoji">🍖</span><span>Main Course</span>
+</button>
+<button class="tab" onclick="showSection('dessert', this)">
+<span class="tab-emoji">🍮</span><span>Dessert</span>
+</button>
+</div>
+<!-- Content -->
+<div class="content">
+<!-- ── ALL ── -->
+<div class="section visible" id="sec-all">
+<!-- Drinks preview -->
+<div class="section-header">
+<div>
+<p class="section-count">01 — Beverages</p>
+<h2>Drinks <em>&amp;</em> Spirits</h2>
+</div>
+<button class="tab" onclick="showSection('drinks', document.querySelectorAll('.tab')[1])" style="border-color:var(--border);color:var(--gold)">See all →</button>
+</div>
+<div class="cards-grid" id="all-drinks-grid" style="margin-bottom:56px"></div>
+<!-- Appetizer preview -->
+<div class="section-header">
+<div>
+<p class="section-count">02 — Starters</p>
+<h2><em>Appetizers</em></h2>
+</div>
+<button class="tab" onclick="showSection('appetizer', document.querySelectorAll('.tab')[2])" style="border-color:var(--border);color:var(--gold)">See all →</button>
+</div>
+<div class="cards-grid" id="all-appetizer-grid" style="margin-bottom:56px"></div>
+<!-- Main Course preview -->
+<div class="section-header">
+<div>
+<p class="section-count">03 — Signature</p>
+<h2>Main <em>Course</em></h2>
+</div>
+<button class="tab" onclick="showSection('main', document.querySelectorAll('.tab')[3])" style="border-color:var(--border);color:var(--gold)">See all →</button>
+</div>
+<div class="cards-grid" id="all-main-grid" style="margin-bottom:56px"></div>
+<!-- Dessert preview -->
+<div class="section-header">
+<div>
+<p class="section-count">04 — Sweet Endings</p>
+<h2><em>Desserts</em></h2>
+</div>
+<button class="tab" onclick="showSection('dessert', document.querySelectorAll('.tab')[4])" style="border-color:var(--border);color:var(--gold)">See all →</button>
+</div>
+<div class="cards-grid" id="all-dessert-grid"></div>
+</div><!-- end #sec-all -->
+<!-- ── DRINKS ── -->
+<div class="section" id="sec-drinks">
+<div class="section-header">
+<div>
+<p class="section-count">Beverages</p>
+<h2>Drinks <em>&amp;</em> Spirits</h2>
+</div>
+</div>
+<div class="cards-grid" id="drinks-grid"></div>
+</div>
+<!-- ── APPETIZER ── -->
+<div class="section" id="sec-appetizer">
+<div class="section-header">
+<div>
+<p class="section-count">Starters</p>
+<h2><em>Appetizers</em></h2>
+</div>
+</div>
+<div class="cards-grid" id="appetizer-grid"></div>
+</div>
+<!-- ── MAIN COURSE ── -->
+<div class="section" id="sec-main">
+<div class="section-header">
+<div>
+<p class="section-count">Signature Dishes</p>
+<h2>Main <em>Course</em></h2>
+</div>
+</div>
+<div class="cards-grid" id="main-grid"></div>
+</div>
+<!-- ── DESSERT ── -->
+<div class="section" id="sec-dessert">
+<div class="section-header">
+<div>
+<p class="section-count">Sweet Endings</p>
+<h2><em>Desserts</em></h2>
+</div>
+</div>
+<div class="cards-grid" id="dessert-grid"></div>
+</div>
+</div><!-- end .content -->
+<!-- Footer -->
+<footer class="footer">
+<p>Powered by <strong>Table Tap</strong>  ·  Scan · Order · Enjoy</p>
+</footer>
+<script>
+    function showSection(id, clickedTab) {
+      // Hide all sections
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+      // Show selected
+      document.getElementById('sec-' + id).classList.add('visible');
+      // Update active tab
+      document.querySelectorAll('.tab-bar .tab').forEach(t => t.classList.remove('active'));
+      if (clickedTab) clickedTab.classList.add('active');
+      // Scroll to top of content smoothly
+      window.scrollTo({ top: document.querySelector('.tab-bar').offsetTop, behavior: 'smooth' });
+    }
+  </script>
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+<div class="cart-header">
+<div>
+<h3 class="cart-title">Your Order</h3>
+<p class="cart-sub" id="cartSub">0 items</p>
+</div>
+<button class="cart-close" onclick="toggleCart()">✕</button>
+</div>
+<div class="cart-items" id="cartItems">
+<div class="cart-empty" id="cartEmpty">
+<span>🍽️</span>
+<p>Your order is empty</p>
+<p>Add items from the menu</p>
+</div>
+</div>
+<div class="cart-footer" id="cartFooter" style="display:none">
+<div class="cart-total">
+<span>Total</span>
+<span class="cart-total-amount" id="cartTotal">0 RWF</span>
+</div>
+<button class="place-order-btn" onclick="placeOrder()">Place Order →</button>
+</div>
+</div>
+<!-- Cart Toggle Button (floating) -->
+<button class="cart-fab" id="cartFab" onclick="toggleCart()">
+    🛒 <span class="fab-count" id="fabCount">0</span>
+</button>
+<!-- Order Confirmation -->
+<div class="order-confirm" id="orderConfirm">
+<div class="confirm-inner">
+<div class="confirm-icon">✅</div>
+<h3>Order Placed!</h3>
+<p>Your order has been sent to the kitchen.<br/>We'll have it ready soon.</p>
+<button onclick="document.getElementById('orderConfirm').style.display='none'">Close</button>
+</div>
+</div>
+<script src="supabase.js"></script>
+<script src="menu.js"></script>
+<script src="menu-loader.js"></script>
+</body>
+</html>

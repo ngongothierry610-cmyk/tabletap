@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Table Tap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f9f7f4; --white: #ffffff; --ink: #16130f; --ink2: #4a4640;
+      --muted: #9c9690; --border: #e8e4de; --accent: #d4500a;
+      --accent2: rgba(212,80,10,0.08); --green: #1a7a4a; --green2: rgba(26,122,74,0.08);
+      --font-d: 'Instrument Serif', serif; --font-b: 'Figtree', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); font-family: var(--font-b); min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 24px; -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+      padding: 44px 40px; width: 100%; max-width: 480px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06); animation: fadeUp 0.4s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+    .logo { font-family: var(--font-d); font-size: 1.6rem; color: var(--ink); text-align: center; margin-bottom: 4px; }
+    .logo span { color: var(--accent); font-style: italic; }
+    .sub { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 28px; }
+
+    /* Tab switcher */
+    .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; gap: 4px; margin-bottom: 28px; }
+    .tab-btn {
+      flex: 1; padding: 10px; border-radius: 7px; border: none; background: transparent;
+      font-family: var(--font-b); font-size: 0.8rem; font-weight: 600; color: var(--muted);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+    /* Role selector */
+    .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .role-btn {
+      padding: 14px 10px; border-radius: 10px; border: 2px solid var(--border);
+      background: transparent; cursor: pointer; font-family: var(--font-b); text-align: center; transition: all 0.2s;
+    }
+    .role-btn .ri { font-size: 1.5rem; display: block; margin-bottom: 5px; }
+    .role-btn .rn { font-size: 0.8rem; font-weight: 600; color: var(--ink); display: block; }
+    .role-btn .rd { font-size: 0.67rem; color: var(--muted); display: block; margin-top: 2px; }
+    .role-btn.sel { border-color: var(--accent); background: var(--accent2); }
+    .role-btn.sel .rn { color: var(--accent); }
+    .role-btn:hover:not(.sel) { border-color: var(--border); background: var(--bg); }
+
+    /* Section divider */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px; margin: 20px 0 16px;
+    }
+    .section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    .section-divider span { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+    /* Credential box */
+    .cred-box {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px; margin-bottom: 16px;
+    }
+    .cred-box-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.75rem; font-weight: 600; color: var(--ink2);
+      letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .cred-box-icon { font-size: 1rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label { font-size: 0.72rem; font-weight: 600; color: var(--ink2); }
+    .form-input {
+      font-family: var(--font-b); font-size: 0.88rem; color: var(--ink);
+      background: var(--white); border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+
+    /* Restaurant info */
+    .rest-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .error-msg {
+      display: none; background: rgba(212,80,10,0.08); border: 1px solid rgba(212,80,10,0.2);
+      border-radius: 8px; padding: 10px 14px; font-size: 0.8rem; color: var(--accent); margin-bottom: 14px;
+    }
+    .error-msg.show { display: block; }
+    .success-msg {
+      display: none; background: var(--green2); border: 1px solid rgba(26,122,74,0.2);
+      border-radius: 8px; padding: 14px; font-size: 0.82rem; color: var(--green); margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .success-msg.show { display: block; }
+
+    .main-btn {
+      width: 100%; background: var(--accent); color: #fff; border: none;
+      border-radius: 8px; padding: 14px; font-family: var(--font-b); font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.15s; margin-top: 8px;
+    }
+    .main-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    .main-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    .divider span { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .demo-btn {
+      background: transparent; color: var(--ink2); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 10px; font-family: var(--font-b); font-size: 0.76rem;
+      font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .demo-btn .di { font-size: 1rem; display: block; margin-bottom: 3px; }
+    .demo-btn:hover { border-color: var(--ink2); background: var(--bg); }
+
+    .footer-link { text-align: center; margin-top: 20px; font-size: 0.78rem; color: var(--muted); }
+    .footer-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .footer-link a:hover { text-decoration: underline; }
+
+    .spinner { display:inline-block; width:13px; height:13px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; margin-right:7px; vertical-align:middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pw-hint { font-size: 0.67rem; color: var(--muted); margin-top: 4px; }
+    .pw-strength { display: flex; gap: 3px; margin-top: 5px; }
+    .pw-bar { flex:1; height:3px; background:var(--border); border-radius:2px; transition:background 0.3s; }
+    .pw-bar.weak   { background: #ef4444; }
+    .pw-bar.ok     { background: var(--accent); }
+    .pw-bar.strong { background: var(--green); }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="logo">Table<span>Tap</span></div>
+  <p class="sub" id="cardSub">Welcome back</p>
+
+  <!-- Sign In / Sign Up tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+    <button class="tab-btn" id="tabSignUp" onclick="switchTab('signup')">Create Account</button>
+  </div>
+
+  <!-- ══════════ SIGN IN FORM ══════════ -->
+  <div id="signinForm">
+
+    <!-- Role selector -->
+    <div class="role-selector">
+      <button class="role-btn sel" id="roleSigninDash" onclick="setSigninRole('dashboard')">
+        <span class="ri">📊</span>
+        <span class="rn">Dashboard</span>
+        <span class="rd">Restaurant owner</span>
+      </button>
+      <button class="role-btn" id="roleSigninKit" onclick="setSigninRole('kitchen')">
+        <span class="ri">👨‍🍳</span>
+        <span class="rn">Kitchen</span>
+        <span class="rd">Kitchen staff</span>
+      </button>
+    </div>
+
+    <div class="error-msg" id="signinError"></div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="siEmail" placeholder="your@email.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-input" id="siPassword" placeholder="Your password" autocomplete="current-password">
+    </div>
+
+    <button class="main-btn" id="signinBtn" onclick="handleSignIn()">Sign In →</button>
+
+    <div class="divider"><span>demo access</span></div>
+    <div class="demo-grid">
+      <button class="demo-btn" onclick="demoLogin('dashboard')"><span class="di">📊</span>Try Dashboard</button>
+      <button class="demo-btn" onclick="demoLogin('kitchen')"><span class="di">👨‍🍳</span>Try Kitchen</button>
+    </div>
+  </div>
+
+  <!-- ══════════ SIGN UP FORM ══════════ -->
+  <div id="signupForm" style="display:none">
+
+    <div class="error-msg"  id="signupError"></div>
+    <div class="success-msg" id="signupSuccess"></div>
+
+    <!-- Restaurant Info -->
+    <div class="cred-box">
+      <div class="cred-box-title"><span class="cred-box-icon">🏪</span> Restaurant Info</div>
+      <div class="rest-group">
+        <div class="form-group">
+          <label class="form-label">Restaurant Name</label>
+          <input type="text" class="form-input" id="suRestName" placeholder="e.g. Chilli Restaurant">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" id="suOwnerName" placeholder="e.g. Jean Pierre">
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard credentials -->
+    <div class="section-divider"><span>Dashboard Account</span></div>
+    <div class="cred-box">
+      <div class="cred-box-title"><span class="cred-box-icon">📊</span> Owner / Dashboard Login</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="suDashEmail" placeholder="owner@restaurant.com" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="suDashPass" placeholder="Min 6 characters" oninput="checkPwStrength(this,'dashStrength')">
+        <div class="pw-strength" id="dashStrength"><div class="pw-bar"></div><div class="pw-bar"></div><div class="pw-bar"></div></div>
+        <span class="pw-hint">For dashboard access — manage menu, orders, analytics</span>
+      </div>
+    </div>
+
+    <!-- Kitchen credentials -->
+    <div class="section-divider"><span>Kitchen Account</span></div>
+    <div class="cred-box">
+      <div class="cred-box-title"><span class="cred-box-icon">👨‍🍳</span> Kitchen Staff Login</div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="suKitEmail" placeholder="kitchen@restaurant.com" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="suKitPass" placeholder="Min 6 characters" oninput="checkPwStrength(this,'kitStrength')">
+        <div class="pw-strength" id="kitStrength"><div class="pw-bar"></div><div class="pw-bar"></div><div class="pw-bar"></div></div>
+        <span class="pw-hint">For kitchen display — view orders, update status</span>
+      </div>
+    </div>
+
+    <button class="main-btn" id="signupBtn" onclick="handleSignUp()">Create Both Accounts →</button>
+  </div>
+
+  <div class="footer-link" id="footerLink"><a href="index.html">← Back to Table Tap</a></div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+  var signinRole = 'dashboard';
+
+  // Check URL params
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('tab') === 'signup') switchTab('signup');
+  if (params.get('redirect') === 'kitchen') setSigninRole('kitchen');
+
+  redirectIfLoggedIn();
+
+  // Enter key on sign in
+  ['siEmail','siPassword'].forEach(function(id) {
+    document.getElementById(id).addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') handleSignIn();
+    });
+  });
+
+  function switchTab(tab) {
+    var isSignIn = tab === 'signin';
+    document.getElementById('signinForm').style.display  = isSignIn ? 'block' : 'none';
+    document.getElementById('signupForm').style.display  = isSignIn ? 'none'  : 'block';
+    document.getElementById('tabSignIn').classList.toggle('active', isSignIn);
+    document.getElementById('tabSignUp').classList.toggle('active', !isSignIn);
+    document.getElementById('cardSub').textContent = isSignIn ? 'Welcome back' : 'Set up your restaurant';
+  }
+
+  function setSigninRole(role) {
+    signinRole = role;
+    document.getElementById('roleSigninDash').classList.toggle('sel', role === 'dashboard');
+    document.getElementById('roleSigninKit').classList.toggle('sel',  role === 'kitchen');
+  }
+
+  // ── SIGN IN ──
+  async function handleSignIn() {
+    var email = document.getElementById('siEmail').value.trim();
+    var pass  = document.getElementById('siPassword').value;
+    var errEl = document.getElementById('signinError');
+    var btn   = document.getElementById('signinBtn');
+
+    if (!email) { showMsg(errEl, 'Please enter your email.'); return; }
+    if (!pass)  { showMsg(errEl, 'Please enter your password.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Signing in...';
+    errEl.classList.remove('show');
+
+    var result = await signIn(email, pass);
+    if (result.success) {
+      localStorage.setItem('tt_role', signinRole);
+      window.location.href = signinRole === 'kitchen' ? 'kitchen.html' : 'dashboard.html';
+    } else {
+      showMsg(errEl, result.error || 'Invalid credentials');
+      btn.disabled = false;
+      btn.textContent = 'Sign In →';
+    }
+  }
+
+  // ── DEMO LOGIN ──
+  function demoLogin(role) {
+    setSigninRole(role);
+    document.getElementById('siEmail').value    = role === 'kitchen' ? 'kitchen@chilli.rw' : 'owner@chilli.rw';
+    document.getElementById('siPassword').value = role === 'kitchen' ? 'kitchen123' : 'chilli123';
+    handleSignIn();
+  }
+
+  // ── SIGN UP ──
+  async function handleSignUp() {
+    var restName  = document.getElementById('suRestName').value.trim();
+    var ownerName = document.getElementById('suOwnerName').value.trim();
+    var dashEmail = document.getElementById('suDashEmail').value.trim();
+    var dashPass  = document.getElementById('suDashPass').value;
+    var kitEmail  = document.getElementById('suKitEmail').value.trim();
+    var kitPass   = document.getElementById('suKitPass').value;
+    var errEl     = document.getElementById('signupError');
+    var successEl = document.getElementById('signupSuccess');
+    var btn       = document.getElementById('signupBtn');
+
+    errEl.classList.remove('show');
+    successEl.classList.remove('show');
+
+    // Validation
+    if (!restName)  { showMsg(errEl, 'Please enter your restaurant name.'); return; }
+    if (!ownerName) { showMsg(errEl, 'Please enter your name.'); return; }
+    if (!dashEmail) { showMsg(errEl, 'Please enter a dashboard email.'); return; }
+    if (dashPass.length < 6) { showMsg(errEl, 'Dashboard password must be at least 6 characters.'); return; }
+    if (!kitEmail)  { showMsg(errEl, 'Please enter a kitchen email.'); return; }
+    if (kitPass.length < 6) { showMsg(errEl, 'Kitchen password must be at least 6 characters.'); return; }
+    if (dashEmail === kitEmail) { showMsg(errEl, 'Dashboard and kitchen emails must be different.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Creating accounts...';
+
+    // Register dashboard account
+    var r1 = await registerUser(dashEmail, dashPass, restName, ownerName, 'dashboard');
+    if (!r1.success) {
+      showMsg(errEl, 'Dashboard account error: ' + r1.error);
+      btn.disabled = false; btn.textContent = 'Create Both Accounts →';
+      return;
+    }
+
+    // Register kitchen account
+    btn.innerHTML = '<span class="spinner"></span>Creating kitchen account...';
+    var r2 = await registerUser(kitEmail, kitPass, restName, ownerName, 'kitchen');
+    if (!r2.success) {
+      showMsg(errEl, 'Kitchen account error: ' + r2.error);
+      btn.disabled = false; btn.textContent = 'Create Both Accounts →';
+      return;
+    }
+
+    // Success
+    btn.disabled = false;
+    btn.textContent = 'Create Both Accounts →';
+    successEl.innerHTML =
+      '✅ <strong>Both accounts created!</strong><br><br>' +
+      '📊 <strong>Dashboard login:</strong> ' + dashEmail + '<br>' +
+      '👨‍🍳 <strong>Kitchen login:</strong> ' + kitEmail + '<br><br>' +
+      'You can now sign in with either account.';
+    successEl.classList.add('show');
+    // Clear form
+    ['suRestName','suOwnerName','suDashEmail','suDashPass','suKitEmail','suKitPass'].forEach(function(id) {
+      document.getElementById(id).value = '';
+    });
+  }
+
+  // ── REGISTER USER via Supabase Auth ──
+  async function registerUser(email, password, restName, ownerName, role) {
+    try {
+      var res  = await fetch('https://flcphwyjqawlmclrsitj.supabase.co/auth/v1/signup', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsY3Bod3lqcWF3bG1jbHJzaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTQ3MzIsImV4cCI6MjA4OTc5MDczMn0.J2FjVGGs2jlC7WeTC1uhYayzSmh2doESx-UiggjNg2E',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          data: {
+            restaurant_name: restName,
+            owner_name: ownerName,
+            role: role
+          }
+        })
+      });
+      var data = await res.json();
+      if (data.user || data.id || (data.email && !data.error)) {
+        return { success: true };
+      }
+      return { success: false, error: data.msg || data.error_description || data.message || 'Registration failed' };
+    } catch(e) {
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  }
+
+  // ── Password strength ──
+  function checkPwStrength(input, barId) {
+    var pw   = input.value;
+    var bars = document.querySelectorAll('#' + barId + ' .pw-bar');
+    bars.forEach(function(b) { b.className = 'pw-bar'; });
+    if (pw.length === 0) return;
+    if (pw.length < 6) {
+      bars[0].classList.add('weak');
+    } else if (pw.length < 10) {
+      bars[0].classList.add('ok'); bars[1].classList.add('ok');
+    } else {
+      bars.forEach(function(b) { b.classList.add('strong'); });
+    }
+  }
+
+  function showMsg(el, msg) {
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+</script>
+</body>
+</html>
