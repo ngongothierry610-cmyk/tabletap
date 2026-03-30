@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Table Tap HQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0e0d0b;
+      --surface:  #161410;
+      --surface2: #1e1b17;
+      --border:   rgba(255,255,255,0.07);
+      --border2:  rgba(255,255,255,0.12);
+      --text:     #f0ebe3;
+      --muted:    #6b6560;
+      --accent:   #e05c2a;
+      --accent2:  rgba(224,92,42,0.12);
+      --green:    #22c55e;
+      --green2:   rgba(34,197,94,0.10);
+      --yellow:   #f59e0b;
+      --yellow2:  rgba(245,158,11,0.10);
+      --blue:     #3b82f6;
+      --blue2:    rgba(59,130,246,0.10);
+      --red:      #ef4444;
+      --red2:     rgba(239,68,68,0.10);
+      --font-d:   'Syne', sans-serif;
+      --font-b:   'Mulish', sans-serif;
+      --r:        10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text); font-family: var(--font-b);
+      min-height: 100vh; display: flex; -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: var(--font-b); }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px; height: 100vh; background: var(--surface);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; z-index: 100; overflow: hidden;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-text { font-family: var(--font-d); font-size: 1.2rem; font-weight: 800; color: var(--text); }
+    .logo-text span { color: var(--accent); }
+    .logo-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--accent2); border: 1px solid rgba(224,92,42,0.3);
+      border-radius: 6px; padding: 3px 8px; margin-top: 6px;
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent);
+    }
+
+    .sidebar-nav {
+      flex: 1; padding: 16px 12px;
+      display: flex; flex-direction: column; gap: 2px;
+      overflow-y: auto; scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.08) transparent;
+      min-height: 0;
+    }
+
+    .nav-label {
+      font-size: 0.55rem; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: rgba(255,255,255,0.2);
+      padding: 10px 10px 5px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+      border-radius: 8px; font-size: 0.8rem; font-weight: 500;
+      color: rgba(255,255,255,0.4); transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .nav-item:hover { background: var(--surface2); color: rgba(255,255,255,0.8); }
+    .nav-item.active { background: var(--accent2); color: var(--accent); border-color: rgba(224,92,42,0.2); }
+    .nav-icon { width: 16px; text-align: center; font-size: 0.85rem; flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding: 14px 12px; border-top: 1px solid var(--border);
+    }
+    .admin-tag {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      background: var(--surface2); border-radius: 8px; margin-bottom: 8px;
+    }
+    .admin-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #c44820);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .admin-info p:first-child { font-size: 0.76rem; font-weight: 600; color: var(--text); }
+    .admin-info p:last-child  { font-size: 0.6rem; color: var(--muted); }
+
+    /* ── Main ── */
+    .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    .topbar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 60px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 50;
+    }
+    .topbar h1 { font-family: var(--font-d); font-size: 1rem; font-weight: 600; color: var(--text); }
+    .topbar p  { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar-btn {
+      font-size: 0.72rem; font-weight: 600; padding: 7px 14px;
+      border-radius: 7px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); transition: all 0.2s;
+    }
+    .topbar-btn:hover { color: var(--text); border-color: var(--border2); }
+    .topbar-btn.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .topbar-btn.accent:hover { opacity: 0.88; }
+
+    .page-content { padding: 28px 32px; flex: 1; }
+
+    /* ── Page sections ── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ── Stats grid ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 18px 20px;
+    }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .stat-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .stat-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .stat-icon.orange { background: var(--accent2); }
+    .stat-icon.green  { background: var(--green2); }
+    .stat-icon.yellow { background: var(--yellow2); }
+    .stat-icon.blue   { background: var(--blue2); }
+    .stat-value { font-family: var(--font-d); font-size: 1.8rem; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+    .stat-sub { font-size: 0.65rem; color: var(--muted); }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); overflow: hidden; margin-bottom: 20px;
+    }
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+    }
+    .panel-title { font-family: var(--font-d); font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .panel-sub   { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+    .panel-action {
+      font-size: 0.72rem; font-weight: 600; padding: 6px 13px;
+      border-radius: 6px; border: none; background: var(--accent2);
+      color: var(--accent); cursor: pointer; transition: opacity 0.2s;
+    }
+    .panel-action:hover { opacity: 0.8; }
+
+    /* ── Clients table ── */
+    .clients-table { width: 100%; border-collapse: collapse; }
+    .clients-table th {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); padding: 10px 24px;
+      text-align: left; background: var(--surface2); border-bottom: 1px solid var(--border);
+    }
+    .clients-table td {
+      padding: 14px 24px; border-bottom: 1px solid var(--border);
+      font-size: 0.8rem; vertical-align: middle;
+    }
+    .clients-table tr:last-child td { border-bottom: none; }
+    .clients-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .client-name { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .client-email { font-size: 0.68rem; color: var(--muted); }
+
+    .plan-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.62rem; font-weight: 700; padding: 3px 9px;
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .plan-pill.starter  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); }
+    .plan-pill.pro      { background: var(--yellow2); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+    .plan-pill.business { background: var(--blue2); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.62rem; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+    }
+    .status-pill::before { content:''; width:6px; height:6px; border-radius:50%; }
+    .status-pill.active   { background: var(--green2); color: var(--green); }
+    .status-pill.active::before { background: var(--green); }
+    .status-pill.inactive { background: var(--red2); color: var(--red); }
+    .status-pill.inactive::before { background: var(--red); }
+
+    .row-actions { display: flex; gap: 6px; }
+    .row-btn {
+      width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); font-size: 0.75rem;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+    }
+    .row-btn:hover { border-color: var(--border2); color: var(--text); }
+    .row-btn.red:hover { border-color: rgba(239,68,68,0.4); color: var(--red); }
+
+    /* ── Feature toggles ── */
+    .feature-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1px; background: var(--border);
+    }
+    .feature-row {
+      background: var(--surface); padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .feature-info {}
+    .feature-name { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .feature-desc { font-size: 0.68rem; color: var(--muted); }
+    .feature-plans { display: flex; gap: 4px; margin-top: 5px; }
+    .feat-plan-tag {
+      font-size: 0.55rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .feat-plan-tag.starter  { background: var(--surface2); color: var(--muted); }
+    .feat-plan-tag.pro      { background: var(--yellow2); color: var(--yellow); }
+    .feat-plan-tag.business { background: var(--blue2); color: var(--blue); }
+
+    /* Toggle switch */
+    .toggle-wrap { flex-shrink: 0; margin-left: 16px; }
+    .toggle { position: relative; width: 38px; height: 22px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; background: var(--surface2);
+      border: 1px solid var(--border2); border-radius: 22px;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute; height: 16px; width: 16px;
+      left: 2px; top: 2px; background: var(--muted);
+      border-radius: 50%; transition: all 0.25s;
+    }
+    .toggle input:checked + .toggle-slider { background: rgba(34,197,94,0.2); border-color: rgba(34,197,94,0.4); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(16px); background: var(--green); }
+
+    /* ── Client detail modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      z-index: 200; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 16px; width: 100%; max-width: 560px; margin: 24px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      animation: modalIn 0.2s ease;
+    }
+    @keyframes modalIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+    }
+    .modal-title { font-family: var(--font-d); font-size: 0.95rem; font-weight: 600; }
+    .modal-close {
+      width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); font-size: 0.9rem; transition: all 0.2s;
+    }
+    .modal-close:hover { background: var(--surface2); color: var(--text); }
+    .modal-body { padding: 20px 24px; max-height: 70vh; overflow-y: auto; }
+    .modal-footer {
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 16px 24px; border-top: 1px solid var(--border);
+    }
+
+    .modal-btn {
+      font-size: 0.78rem; font-weight: 600; padding: 8px 18px;
+      border-radius: 7px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); transition: all 0.2s;
+    }
+    .modal-btn:hover { border-color: var(--border2); color: var(--text); }
+    .modal-btn.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .modal-btn.accent:hover { opacity: 0.88; }
+    .modal-btn.danger { background: var(--red2); color: var(--red); border-color: rgba(239,68,68,0.3); }
+
+    .detail-section { margin-bottom: 20px; }
+    .detail-label {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .detail-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key   { color: var(--muted); }
+    .detail-value { color: var(--text); font-weight: 500; }
+
+    .modal-feature-grid { display: flex; flex-direction: column; gap: 6px; }
+    .modal-feature-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: var(--surface2); border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .modal-feature-name { font-size: 0.8rem; font-weight: 500; color: var(--text); }
+    .modal-feature-plan { font-size: 0.65rem; color: var(--muted); margin-top: 1px; }
+
+    /* ── Toast ── */
+    #adminToast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--surface); color: var(--text); padding: 10px 20px;
+      border-radius: 8px; font-size: 0.8rem; font-weight: 500;
+      border: 1px solid var(--border2); box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      z-index: 9999; display: none;
+    }
+
+    /* ── Loading ── */
+    .loading { padding: 48px; text-align: center; color: var(--muted); font-size: 0.82rem; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .page-content > * { animation: fadeUp 0.35s ease both; }
+  </style>
+</head>
+<body>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-text">Table<span>Tap</span></div>
+      <div class="logo-badge">⚡ Super Admin</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Overview</div>
+      <a href="#" class="nav-item active" onclick="showSec('overview',this);return false;">
+        <span class="nav-icon">⊞</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" onclick="showSec('clients',this);return false;">
+        <span class="nav-icon">🏪</span> Clients
+      </a>
+      <a href="#" class="nav-item" onclick="showSec('features',this);return false;">
+        <span class="nav-icon">🧩</span> Features
+      </a>
+
+      <div class="nav-label">Business</div>
+      <a href="#" class="nav-item" onclick="showSec('revenue',this);return false;">
+        <span class="nav-icon">💰</span> Revenue
+      </a>
+      <a href="#" class="nav-item" onclick="showSec('activity',this);return false;">
+        <span class="nav-icon">📋</span> Activity Log
+      </a>
+
+      <div class="nav-label">System</div>
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-icon">↗</span> Demo Dashboard
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-tag">
+        <div class="admin-avatar">T</div>
+        <div class="admin-info">
+          <p>TableTap Owner</p>
+          <p>Super Admin</p>
+        </div>
+      </div>
+      <button onclick="signOut()" style="width:100%;background:rgba(239,68,68,0.08);color:var(--red);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px;font-size:0.72rem;font-weight:600;font-family:var(--font-b)">
+        🚪 Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+
+    <div class="topbar">
+      <div>
+        <h1 id="adminGreeting">TableTap HQ</h1>
+        <p id="adminDate">Loading...</p>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" onclick="loadAll()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ══ OVERVIEW ══ -->
+      <div class="page-section active" id="sec-overview">
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Total Clients</span><div class="stat-icon blue">🏪</div></div>
+            <div class="stat-value" id="statTotal">—</div>
+            <div class="stat-sub">Registered restaurants</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Active Today</span><div class="stat-icon green">✅</div></div>
+            <div class="stat-value" id="statActive">—</div>
+            <div class="stat-sub">With orders today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Pro / Business</span><div class="stat-icon yellow">🚀</div></div>
+            <div class="stat-value" id="statPaid">—</div>
+            <div class="stat-sub">Paying clients</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Est. MRR</span><div class="stat-icon orange">💰</div></div>
+            <div class="stat-value" id="statMRR">—</div>
+            <div class="stat-sub">Monthly recurring (RWF)</div>
+          </div>
+        </div>
+
+        <!-- Recent clients preview -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Recent Clients</div>
+              <div class="panel-sub">Last 5 registered restaurants</div>
+            </div>
+            <button class="panel-action" onclick="showSec('clients',null)">View all →</button>
+          </div>
+          <table class="clients-table">
+            <thead><tr><th>Restaurant</th><th>Plan</th><th>Status</th><th>Joined</th></tr></thead>
+            <tbody id="recentClientsBody">
+              <tr><td colspan="4" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- ══ CLIENTS ══ -->
+      <div class="page-section" id="sec-clients">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">All Clients</div>
+              <div class="panel-sub" id="clientsSubLabel">Loading...</div>
+            </div>
+            <button class="panel-action" onclick="loadClients()">↻ Refresh</button>
+          </div>
+          <table class="clients-table">
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="allClientsBody">
+              <tr><td colspan="5" class="loading">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ FEATURES ══ -->
+      <div class="page-section" id="sec-features">
+        <div class="panel" style="margin-bottom:20px">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Feature Access by Plan</div>
+              <div class="panel-sub">Control which features are available on each plan. Toggle to enable/disable globally.</div>
+            </div>
+          </div>
+          <div class="feature-grid" id="featureGrid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ REVENUE ══ -->
+      <div class="page-section" id="sec-revenue">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Starter Clients</span><div class="stat-icon" style="background:var(--surface2)">🌱</div></div>
+            <div class="stat-value" id="revStarter">—</div>
+            <div class="stat-sub" id="revStarterAmt">RWF 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Pro Clients</span><div class="stat-icon yellow">🚀</div></div>
+            <div class="stat-value" id="revPro">—</div>
+            <div class="stat-sub" id="revProAmt">RWF 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Business Clients</span><div class="stat-icon blue">🏢</div></div>
+            <div class="stat-value" id="revBusiness">—</div>
+            <div class="stat-sub" id="revBusinessAmt">RWF 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><span class="stat-label">Total MRR</span><div class="stat-icon orange">💰</div></div>
+            <div class="stat-value" id="revTotal">—</div>
+            <div class="stat-sub">Monthly Recurring Revenue</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title">Revenue Breakdown</div><div class="panel-sub">Per client</div></div>
+          </div>
+          <table class="clients-table">
+            <thead><tr><th>Restaurant</th><th>Plan</th><th>Monthly RWF</th><th>Joined</th></tr></thead>
+            <tbody id="revenueBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ ACTIVITY ══ -->
+      <div class="page-section" id="sec-activity">
+        <div class="panel">
+          <div class="panel-header">
+            <div><div class="panel-title">Activity Log</div><div class="panel-sub">Recent sign-ups and plan changes</div></div>
+          </div>
+          <div id="activityList" style="padding:8px 0">
+            <div class="loading">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── CLIENT DETAIL MODAL ── -->
+  <div class="modal-overlay" id="clientModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalClientName">Client Details</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="modal-btn danger" id="modalSuspendBtn" onclick="suspendClient()">Suspend</button>
+        <button class="modal-btn" onclick="closeModal()">Close</button>
+        <button class="modal-btn accent" onclick="saveClientChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminToast"></div>
+
+  <script src="auth.js"></script>
+  <script>
+    // ── Constants ──
+    const SB_URL  = 'https://flcphwyjqawlmclrsitj.supabase.co/rest/v1';
+    const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsY3Bod3lqcWF3bG1jbHJzaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTQ3MzIsImV4cCI6MjA4OTc5MDczMn0.J2FjVGGs2jlC7WeTC1uhYayzSmh2doESx-UiggjNg2E';
+    const HEADERS = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY, 'Content-Type': 'application/json' };
+
+    // ─── ADMIN GUARD ── Change this to your admin email ───
+    var ADMIN_EMAIL = 'admin@tabletap.rw'; // ← set your email here
+
+    var allClients     = [];
+    var currentClient  = null;
+    var activeSection  = 'overview';
+
+    // Plan pricing
+    var PLAN_PRICES = { starter: 5000, pro: 25000, business: 60000 };
+    var PLAN_LABELS = { starter: 'Starter', pro: 'Pro', business: 'Business' };
+
+    // All features with plan access and toggle state
+    var FEATURES = [
+      { id: 'menu_items',      name: 'Menu Items',         desc: 'Add and manage menu items',             plans: ['starter','pro','business'], on: true  },
+      { id: 'item_photos',     name: 'Item Photos',        desc: 'Upload photos per menu item',           plans: ['pro','business'],           on: true  },
+      { id: 'qr_code',         name: 'QR Code',            desc: 'Generate & download QR code',           plans: ['starter','pro','business'], on: true  },
+      { id: 'qr_per_table',    name: 'QR Per Table',       desc: 'Unique QR per table number',            plans: ['pro','business'],           on: true  },
+      { id: 'order_mgmt',      name: 'Order Management',   desc: 'Receive and track customer orders',     plans: ['pro','business'],           on: true  },
+      { id: 'kitchen_display', name: 'Kitchen Display',    desc: 'Real-time kitchen order screen',        plans: ['pro','business'],           on: true  },
+      { id: 'analytics',       name: 'Basic Analytics',    desc: 'Sales stats and order history',         plans: ['pro','business'],           on: true  },
+      { id: 'adv_analytics',   name: 'Advanced Analytics', desc: 'Trends, peak hours, comparisons',       plans: ['business'],                 on: true  },
+      { id: 'ingredients',     name: 'Ingredients',        desc: 'Add ingredients per menu item',         plans: ['pro','business'],           on: true  },
+      { id: 'multi_location',  name: 'Multi-Location',     desc: 'Manage multiple restaurant branches',   plans: ['business'],                 on: true  },
+      { id: 'remove_branding', name: 'Remove Branding',    desc: 'Hide TableTap watermark',               plans: ['pro','business'],           on: true  },
+      { id: 'categories',      name: 'Custom Categories',  desc: 'Add/rename menu categories',            plans: ['starter','pro','business'], on: true  },
+    ];
+
+    // ── Greeting ──
+    (function() {
+      var h   = new Date().getHours();
+      var gr  = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('adminGreeting').textContent = gr + ', TableTap \uD83D\uDC4B';
+      document.getElementById('adminDate').textContent     = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    })();
+
+    // ── Section navigation ──
+    function showSec(name, el) {
+      activeSection = name;
+      document.querySelectorAll('.page-section').forEach(function(s) { s.classList.remove('active'); });
+      var sec = document.getElementById('sec-' + name);
+      if (sec) sec.classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      if (el) el.classList.add('active');
+      if (name === 'clients')  loadClients();
+      if (name === 'features') renderFeatures();
+      if (name === 'revenue')  loadRevenue();
+      if (name === 'activity') loadActivity();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Load all data ──
+    async function loadAll() {
+      await loadClients();
+      renderOverviewStats();
+    }
+
+    // ── Fetch all restaurants ──
+    async function loadClients() {
+      try {
+        var res  = await fetch(SB_URL + '/restaurants?select=*&order=created_at.desc', { headers: HEADERS });
+        allClients = await res.json();
+        if (!Array.isArray(allClients)) allClients = [];
+        renderClientsTable(allClients, 'allClientsBody', true);
+        renderClientsTable(allClients.slice(0, 5), 'recentClientsBody', false);
+        var sub = document.getElementById('clientsSubLabel');
+        if (sub) sub.textContent = allClients.length + ' registered restaurants';
+      } catch(e) {
+        console.error('loadClients error:', e);
+      }
+    }
+
+    function renderOverviewStats() {
+      var total  = allClients.length;
+      var paid   = allClients.filter(function(c) { return c.plan === 'pro' || c.plan === 'business'; }).length;
+      var mrr    = allClients.reduce(function(s, c) { return s + (PLAN_PRICES[c.plan] || 0); }, 0);
+
+      var sv = document.getElementById('statTotal');  if (sv) sv.textContent = total;
+      var sp = document.getElementById('statPaid');   if (sp) sp.textContent = paid;
+      var sm = document.getElementById('statMRR');    if (sm) sm.textContent = mrr >= 1000 ? Math.round(mrr/1000) + 'k' : mrr;
+      // Active today would require cross-table query — show total for now
+      var sa = document.getElementById('statActive'); if (sa) sa.textContent = total;
+    }
+
+    function renderClientsTable(clients, tbodyId, showActions) {
+      var tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      if (!clients.length) {
+        tbody.innerHTML = '<tr><td colspan="' + (showActions ? 5 : 4) + '" class="loading">No clients yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = '';
+      clients.forEach(function(c) {
+        var plan   = c.plan || 'starter';
+        var joined = c.created_at ? new Date(c.created_at).toLocaleDateString() : '—';
+        var tr     = document.createElement('tr');
+        var actions = showActions
+          ? '<td><div class="row-actions">' +
+              '<button class="row-btn" title="View/Edit" onclick="openClientModal(\'' + c.restaurant_id + '\')">🔍</button>' +
+              '<button class="row-btn red" title="Suspend" onclick="confirmSuspend(\'' + c.restaurant_id + '\',\'' + (c.restaurant_name||'').replace(/'/g,"\\'") + '\')">🚫</button>' +
+            '</div></td>'
+          : '';
+        tr.innerHTML =
+          '<td>' +
+            '<div class="client-name">' + (c.restaurant_name || c.restaurant_id) + '</div>' +
+            '<div class="client-email">' + (c.owner_name || '—') + '</div>' +
+          '</td>' +
+          '<td><span class="plan-pill ' + plan + '">' + (PLAN_LABELS[plan] || plan) + '</span></td>' +
+          '<td><span class="status-pill active">Active</span></td>' +
+          '<td style="font-size:0.75rem;color:var(--muted)">' + joined + '</td>' +
+          actions;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ── Features panel ──
+    function renderFeatures() {
+      var grid = document.getElementById('featureGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      FEATURES.forEach(function(f) {
+        var planTags = f.plans.map(function(p) {
+          return '<span class="feat-plan-tag ' + p + '">' + p + '</span>';
+        }).join('');
+        var row = document.createElement('div');
+        row.className = 'feature-row';
+        row.innerHTML =
+          '<div class="feature-info">' +
+            '<div class="feature-name">' + f.name + '</div>' +
+            '<div class="feature-desc">' + f.desc + '</div>' +
+            '<div class="feature-plans">' + planTags + '</div>' +
+          '</div>' +
+          '<label class="toggle toggle-wrap">' +
+            '<input type="checkbox"' + (f.on ? ' checked' : '') + ' onchange="toggleFeature(\'' + f.id + '\',this.checked)">' +
+            '<span class="toggle-slider"></span>' +
+          '</label>';
+        grid.appendChild(row);
+      });
+    }
+
+    function toggleFeature(id, on) {
+      var feat = FEATURES.find(function(f) { return f.id === id; });
+      if (feat) feat.on = on;
+      toast('Feature "' + (feat ? feat.name : id) + '" ' + (on ? 'enabled' : 'disabled'));
+    }
+
+    // ── Revenue section ──
+    function loadRevenue() {
+      var byPlan = { starter: 0, pro: 0, business: 0 };
+      allClients.forEach(function(c) {
+        var p = c.plan || 'starter';
+        byPlan[p] = (byPlan[p] || 0) + 1;
+      });
+
+      var revS = document.getElementById('revStarter');  if (revS) revS.textContent = byPlan.starter;
+      var revP = document.getElementById('revPro');      if (revP) revP.textContent = byPlan.pro;
+      var revB = document.getElementById('revBusiness'); if (revB) revB.textContent = byPlan.business;
+
+      var mrrS = byPlan.starter  * PLAN_PRICES.starter;
+      var mrrP = byPlan.pro      * PLAN_PRICES.pro;
+      var mrrB = byPlan.business * PLAN_PRICES.business;
+      var mrrT = mrrS + mrrP + mrrB;
+
+      var saEl = document.getElementById('revStarterAmt');  if (saEl) saEl.textContent = 'RWF ' + mrrS.toLocaleString();
+      var paEl = document.getElementById('revProAmt');      if (paEl) paEl.textContent = 'RWF ' + mrrP.toLocaleString();
+      var baEl = document.getElementById('revBusinessAmt'); if (baEl) baEl.textContent = 'RWF ' + mrrB.toLocaleString();
+      var taEl = document.getElementById('revTotal');       if (taEl) taEl.textContent = mrrT >= 1000 ? Math.round(mrrT/1000) + 'k' : mrrT;
+
+      var tbody = document.getElementById('revenueBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!allClients.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="loading">No clients</td></tr>';
+        return;
+      }
+      allClients.forEach(function(c) {
+        var plan   = c.plan || 'starter';
+        var amount = PLAN_PRICES[plan] || 0;
+        var joined = c.created_at ? new Date(c.created_at).toLocaleDateString() : '—';
+        var tr     = document.createElement('tr');
+        tr.innerHTML =
+          '<td><div class="client-name">' + (c.restaurant_name || c.restaurant_id) + '</div></td>' +
+          '<td><span class="plan-pill ' + plan + '">' + (PLAN_LABELS[plan] || plan) + '</span></td>' +
+          '<td style="font-family:var(--font-d);font-size:0.85rem;color:var(--text);font-weight:600">' + amount.toLocaleString() + '</td>' +
+          '<td style="font-size:0.75rem;color:var(--muted)">' + joined + '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ── Activity log ──
+    function loadActivity() {
+      var list = document.getElementById('activityList');
+      if (!list) return;
+      list.innerHTML = '';
+      if (!allClients.length) {
+        list.innerHTML = '<div class="loading">No activity yet</div>';
+        return;
+      }
+      // Show sign-ups sorted by created_at
+      var sorted = allClients.slice().sort(function(a, b) {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      sorted.forEach(function(c) {
+        var plan   = c.plan || 'starter';
+        var dt     = c.created_at ? new Date(c.created_at) : null;
+        var timeAgo = dt ? formatTimeAgo(dt) : '—';
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border);font-size:0.8rem';
+        row.innerHTML =
+          '<div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0"></div>' +
+          '<div style="flex:1">' +
+            '<span style="color:var(--text);font-weight:600">' + (c.restaurant_name || c.restaurant_id) + '</span>' +
+            ' <span style="color:var(--muted)">signed up on </span>' +
+            '<span class="plan-pill ' + plan + '" style="margin-left:4px">' + (PLAN_LABELS[plan] || plan) + '</span>' +
+          '</div>' +
+          '<div style="font-size:0.68rem;color:var(--muted);flex-shrink:0">' + timeAgo + '</div>';
+        list.appendChild(row);
+      });
+    }
+
+    function formatTimeAgo(date) {
+      var diff = Date.now() - date.getTime();
+      var mins = Math.floor(diff / 60000);
+      if (mins < 1)   return 'Just now';
+      if (mins < 60)  return mins + 'm ago';
+      var hrs = Math.floor(mins / 60);
+      if (hrs < 24)   return hrs + 'h ago';
+      var days = Math.floor(hrs / 24);
+      if (days < 7)   return days + 'd ago';
+      return date.toLocaleDateString();
+    }
+
+    // ── Client modal ──
+    function openClientModal(restaurantId) {
+      currentClient = allClients.find(function(c) { return c.restaurant_id === restaurantId; });
+      if (!currentClient) return;
+
+      document.getElementById('modalClientName').textContent = currentClient.restaurant_name || restaurantId;
+
+      var plan = currentClient.plan || 'starter';
+      var body = document.getElementById('modalBody');
+      body.innerHTML =
+        '<div class="detail-section">' +
+          '<div class="detail-label">Restaurant Info</div>' +
+          '<div class="detail-row"><span class="detail-key">Name</span><span class="detail-value">' + (currentClient.restaurant_name || '—') + '</span></div>' +
+          '<div class="detail-row"><span class="detail-key">Slug</span><span class="detail-value">' + (currentClient.restaurant_id || '—') + '</span></div>' +
+          '<div class="detail-row"><span class="detail-key">Owner</span><span class="detail-value">' + (currentClient.owner_name || '—') + '</span></div>' +
+          '<div class="detail-row"><span class="detail-key">Joined</span><span class="detail-value">' + (currentClient.created_at ? new Date(currentClient.created_at).toLocaleDateString() : '—') + '</span></div>' +
+        '</div>' +
+        '<div class="detail-section">' +
+          '<div class="detail-label">Plan</div>' +
+          '<div class="detail-row"><span class="detail-key">Current Plan</span>' +
+            '<select id="modalPlanSelect" style="background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:0.8rem;font-family:var(--font-b)">' +
+              '<option value="starter"' + (plan==='starter'?' selected':'') + '>Starter — RWF 5,000/mo</option>' +
+              '<option value="pro"'     + (plan==='pro'?' selected':'')     + '>Pro — RWF 25,000/mo</option>' +
+              '<option value="business"' + (plan==='business'?' selected':'') + '>Business — RWF 60,000/mo</option>' +
+            '</select>' +
+          '</div>' +
+        '</div>' +
+        '<div class="detail-section">' +
+          '<div class="detail-label">Feature Access</div>' +
+          '<div class="modal-feature-grid">' +
+          FEATURES.map(function(f) {
+            var hasAccess = f.on && f.plans.indexOf(plan) !== -1;
+            return '<div class="modal-feature-row">' +
+              '<div>' +
+                '<div class="modal-feature-name">' + f.name + '</div>' +
+                '<div class="modal-feature-plan">' + f.plans.join(', ') + '</div>' +
+              '</div>' +
+              '<label class="toggle">' +
+                '<input type="checkbox" id="feat_' + f.id + '"' + (hasAccess ? ' checked' : '') + '>' +
+                '<span class="toggle-slider"></span>' +
+              '</label>' +
+            '</div>';
+          }).join('') +
+          '</div>' +
+        '</div>';
+
+      document.getElementById('clientModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('clientModal').classList.remove('open');
+      currentClient = null;
+    }
+
+    async function saveClientChanges() {
+      if (!currentClient) return;
+      var newPlan = document.getElementById('modalPlanSelect').value;
+      try {
+        var res = await fetch(SB_URL + '/restaurants?restaurant_id=eq.' + currentClient.restaurant_id, {
+          method: 'PATCH',
+          headers: Object.assign({}, HEADERS, { 'Prefer': 'return=minimal' }),
+          body: JSON.stringify({ plan: newPlan })
+        });
+        if (res.ok) {
+          currentClient.plan = newPlan;
+          var c = allClients.find(function(x) { return x.restaurant_id === currentClient.restaurant_id; });
+          if (c) c.plan = newPlan;
+          closeModal();
+          renderClientsTable(allClients, 'allClientsBody', true);
+          renderClientsTable(allClients.slice(0, 5), 'recentClientsBody', false);
+          renderOverviewStats();
+          toast('Plan updated to ' + PLAN_LABELS[newPlan] + ' \u2713');
+        } else {
+          toast('Error saving changes');
+        }
+      } catch(e) {
+        console.error(e);
+        toast('Error saving changes');
+      }
+    }
+
+    function suspendClient() {
+      if (!currentClient) return;
+      if (!confirm('Suspend "' + currentClient.restaurant_name + '"? This will not delete their data.')) return;
+      closeModal();
+      toast('"' + currentClient.restaurant_name + '" suspended (feature coming soon)');
+    }
+
+    function confirmSuspend(id, name) {
+      if (confirm('Suspend "' + name + '"?')) {
+        toast('"' + name + '" suspend feature coming soon');
+      }
+    }
+
+    // ── Toast ──
+    function toast(msg) {
+      var t = document.getElementById('adminToast');
+      if (!t) return;
+      t.textContent = msg;
+      t.style.display = 'block';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function() { t.style.display = 'none'; }, 3000);
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAll().then(function() {
+        renderOverviewStats();
+        renderFeatures();
+      });
+    });
+  </script>
+</body>
+</html>
