@@ -29,7 +29,6 @@
     .logo span { color: var(--accent); font-style: italic; }
     .sub { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 28px; }
 
-    /* Tab switcher */
     .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; gap: 4px; margin-bottom: 28px; }
     .tab-btn {
       flex: 1; padding: 10px; border-radius: 7px; border: none; background: transparent;
@@ -38,7 +37,6 @@
     }
     .tab-btn.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
 
-    /* Role selector */
     .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
     .role-btn {
       padding: 14px 10px; border-radius: 10px; border: 2px solid var(--border);
@@ -51,18 +49,11 @@
     .role-btn.sel .rn { color: var(--accent); }
     .role-btn:hover:not(.sel) { border-color: var(--border); background: var(--bg); }
 
-    /* Section divider */
-    .section-divider {
-      display: flex; align-items: center; gap: 10px; margin: 20px 0 16px;
-    }
+    .section-divider { display: flex; align-items: center; gap: 10px; margin: 20px 0 16px; }
     .section-divider::before, .section-divider::after { content:''; flex:1; height:1px; background:var(--border); }
     .section-divider span { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 
-    /* Credential box */
-    .cred-box {
-      background: var(--bg); border: 1px solid var(--border); border-radius: 10px;
-      padding: 16px; margin-bottom: 16px;
-    }
+    .cred-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
     .cred-box-title {
       display: flex; align-items: center; gap: 8px;
       font-size: 0.75rem; font-weight: 600; color: var(--ink2);
@@ -79,8 +70,6 @@
       padding: 10px 14px; outline: none; transition: border-color 0.2s;
     }
     .form-input:focus { border-color: var(--accent); }
-
-    /* Restaurant info */
     .rest-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
     .error-msg {
@@ -101,7 +90,7 @@
       font-weight: 600; cursor: pointer; transition: opacity 0.2s, transform 0.15s; margin-top: 8px;
     }
     .main-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
-    .main-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .main-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; }
     .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
@@ -129,6 +118,59 @@
     .pw-bar.weak   { background: #ef4444; }
     .pw-bar.ok     { background: var(--accent); }
     .pw-bar.strong { background: var(--green); }
+
+    /* ── Plan selection steps ── */
+    .plan-step { display: none; }
+    .plan-step.active { display: block; }
+
+    .signup-steps {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 20px;
+    }
+    .signup-step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); transition: background 0.3s;
+    }
+    .signup-step-dot.active { background: var(--accent); }
+    .signup-step-dot.done   { background: var(--green); }
+
+    .plan-cards { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 16px; }
+
+    .plan-card {
+      border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+      gap: 12px; background: transparent; text-align: left; width: 100%;
+      font-family: var(--font-b);
+    }
+    .plan-card:hover { border-color: var(--accent); background: var(--accent2); }
+    .plan-card.sel   { border-color: var(--accent); background: var(--accent2); }
+
+    .plan-card-icon {
+      width: 38px; height: 38px; border-radius: 9px;
+      background: var(--bg); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .plan-card.sel .plan-card-icon { background: rgba(212,80,10,0.12); }
+
+    .plan-card-info { flex: 1; min-width: 0; }
+    .plan-card-name {
+      font-size: 0.85rem; font-weight: 700; color: var(--ink);
+      display: flex; align-items: center; gap: 7px; margin-bottom: 2px;
+    }
+    .plan-card-desc { font-size: 0.68rem; color: var(--muted); }
+    .plan-card-price { font-size: 0.82rem; font-weight: 700; color: var(--accent); flex-shrink: 0; white-space: nowrap; }
+
+    .plan-popular-badge {
+      font-size: 0.52rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; background: var(--accent); color: #fff;
+      padding: 2px 6px; border-radius: 8px;
+    }
+
+    .payment-notice {
+      background: rgba(26,122,74,0.06); border: 1px solid rgba(26,122,74,0.2);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+      font-size: 0.76rem; color: var(--green); line-height: 1.6;
+    }
   </style>
 </head>
 <body>
@@ -137,26 +179,19 @@
   <div class="logo">Table<span>Tap</span></div>
   <p class="sub" id="cardSub">Welcome back</p>
 
-  <!-- Sign In / Sign Up tabs -->
   <div class="tabs">
     <button class="tab-btn active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
     <button class="tab-btn" id="tabSignUp" onclick="switchTab('signup')">Create Account</button>
   </div>
 
-  <!-- ══════════ SIGN IN FORM ══════════ -->
+  <!-- ══ SIGN IN ══ -->
   <div id="signinForm">
-
-    <!-- Role selector -->
     <div class="role-selector">
       <button class="role-btn sel" id="roleSigninDash" onclick="setSigninRole('dashboard')">
-        <span class="ri">📊</span>
-        <span class="rn">Dashboard</span>
-        <span class="rd">Restaurant owner</span>
+        <span class="ri">📊</span><span class="rn">Dashboard</span><span class="rd">Restaurant owner</span>
       </button>
       <button class="role-btn" id="roleSigninKit" onclick="setSigninRole('kitchen')">
-        <span class="ri">👨‍🍳</span>
-        <span class="rn">Kitchen</span>
-        <span class="rd">Kitchen staff</span>
+        <span class="ri">👨‍🍳</span><span class="rn">Kitchen</span><span class="rd">Kitchen staff</span>
       </button>
     </div>
 
@@ -180,77 +215,134 @@
     </div>
   </div>
 
-  <!-- ══════════ SIGN UP FORM ══════════ -->
+  <!-- ══ SIGN UP ══ -->
   <div id="signupForm" style="display:none">
 
     <div class="error-msg"  id="signupError"></div>
     <div class="success-msg" id="signupSuccess"></div>
 
-    <!-- Restaurant Info -->
-    <div class="cred-box">
-      <div class="cred-box-title"><span class="cred-box-icon">🏪</span> Restaurant Info</div>
-      <div class="rest-group">
+    <div class="signup-steps">
+      <div class="signup-step-dot active" id="dot1"></div>
+      <div class="signup-step-dot" id="dot2"></div>
+    </div>
+
+    <!-- Step 1: Choose Plan -->
+    <div class="plan-step active" id="suStep1">
+      <p style="font-size:0.75rem;font-weight:600;color:var(--ink2);margin-bottom:14px;text-align:center;letter-spacing:0.06em;text-transform:uppercase">Choose your plan</p>
+
+      <div class="plan-cards">
+        <button class="plan-card" id="planCardStarter" onclick="selectPlan('starter')">
+          <div class="plan-card-icon">🌱</div>
+          <div class="plan-card-info">
+            <div class="plan-card-name">Starter</div>
+            <div class="plan-card-desc">Up to 20 items · QR code · Basic menu · No kitchen display</div>
+          </div>
+          <div class="plan-card-price">RWF 5k/mo</div>
+        </button>
+
+        <button class="plan-card" id="planCardPro" onclick="selectPlan('pro')">
+          <div class="plan-card-icon">🚀</div>
+          <div class="plan-card-info">
+            <div class="plan-card-name">Pro <span class="plan-popular-badge">Popular</span></div>
+            <div class="plan-card-desc">Unlimited items · Photos · Kitchen display · Order management</div>
+          </div>
+          <div class="plan-card-price">RWF 25k/mo</div>
+        </button>
+
+        <button class="plan-card" id="planCardBusiness" onclick="selectPlan('business')">
+          <div class="plan-card-icon">🏢</div>
+          <div class="plan-card-info">
+            <div class="plan-card-name">Business</div>
+            <div class="plan-card-desc">Everything in Pro · Multi-location · Advanced analytics</div>
+          </div>
+          <div class="plan-card-price">RWF 60k/mo</div>
+        </button>
+      </div>
+
+      <button class="main-btn" id="planNextBtn" onclick="goToStep2()" disabled>Continue →</button>
+    </div>
+
+    <!-- Step 2: Account Details -->
+    <div class="plan-step" id="suStep2">
+      <button onclick="backToStep1()" style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted);background:none;border:none;cursor:pointer;margin-bottom:16px;padding:0;font-family:var(--font-b)">← Back</button>
+
+      <div id="suPaymentNotice" class="payment-notice" style="display:none"></div>
+
+      <div class="cred-box">
+        <div class="cred-box-title"><span class="cred-box-icon">🏪</span> Restaurant Info</div>
+        <div class="rest-group">
+          <div class="form-group">
+            <label class="form-label">Restaurant Name</label>
+            <input type="text" class="form-input" id="suRestName" placeholder="e.g. Chilli Restaurant">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" id="suOwnerName" placeholder="e.g. Jean Pierre">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Dashboard Account</span></div>
+      <div class="cred-box">
+        <div class="cred-box-title"><span class="cred-box-icon">📊</span> Owner / Dashboard Login</div>
         <div class="form-group">
-          <label class="form-label">Restaurant Name</label>
-          <input type="text" class="form-input" id="suRestName" placeholder="e.g. Chilli Restaurant">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="suDashEmail" placeholder="owner@restaurant.com" autocomplete="off">
         </div>
         <div class="form-group">
-          <label class="form-label">Your Name</label>
-          <input type="text" class="form-input" id="suOwnerName" placeholder="e.g. Jean Pierre">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="suDashPass" placeholder="Min 6 characters" oninput="checkPwStrength(this,'dashStrength')">
+          <div class="pw-strength" id="dashStrength"><div class="pw-bar"></div><div class="pw-bar"></div><div class="pw-bar"></div></div>
+          <span class="pw-hint">For dashboard access — manage menu, orders, analytics</span>
         </div>
       </div>
+
+      <div class="section-divider"><span>Kitchen Account</span></div>
+      <div class="cred-box">
+        <div class="cred-box-title"><span class="cred-box-icon">👨‍🍳</span> Kitchen Staff Login</div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="suKitEmail" placeholder="kitchen@restaurant.com" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" id="suKitPass" placeholder="Min 6 characters" oninput="checkPwStrength(this,'kitStrength')">
+          <div class="pw-strength" id="kitStrength"><div class="pw-bar"></div><div class="pw-bar"></div><div class="pw-bar"></div></div>
+          <span class="pw-hint">For kitchen display — view orders, update status</span>
+        </div>
+      </div>
+
+      <button class="main-btn" id="signupBtn" onclick="handleSignUp()">Create Account →</button>
     </div>
 
-    <!-- Dashboard credentials -->
-    <div class="section-divider"><span>Dashboard Account</span></div>
-    <div class="cred-box">
-      <div class="cred-box-title"><span class="cred-box-icon">📊</span> Owner / Dashboard Login</div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" id="suDashEmail" placeholder="owner@restaurant.com" autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-input" id="suDashPass" placeholder="Min 6 characters" oninput="checkPwStrength(this,'dashStrength')">
-        <div class="pw-strength" id="dashStrength"><div class="pw-bar"></div><div class="pw-bar"></div><div class="pw-bar"></div></div>
-        <span class="pw-hint">For dashboard access — manage menu, orders, analytics</span>
-      </div>
-    </div>
-
-    <!-- Kitchen credentials -->
-    <div class="section-divider"><span>Kitchen Account</span></div>
-    <div class="cred-box">
-      <div class="cred-box-title"><span class="cred-box-icon">👨‍🍳</span> Kitchen Staff Login</div>
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" id="suKitEmail" placeholder="kitchen@restaurant.com" autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-input" id="suKitPass" placeholder="Min 6 characters" oninput="checkPwStrength(this,'kitStrength')">
-        <div class="pw-strength" id="kitStrength"><div class="pw-bar"></div><div class="pw-bar"></div><div class="pw-bar"></div></div>
-        <span class="pw-hint">For kitchen display — view orders, update status</span>
-      </div>
-    </div>
-
-    <button class="main-btn" id="signupBtn" onclick="handleSignUp()">Create Both Accounts →</button>
   </div>
 
-  <div class="footer-link" id="footerLink"><a href="index.html">← Back to Table Tap</a></div>
+  <div class="footer-link"><a href="index.html">← Back to Table Tap</a></div>
 </div>
 
+<!-- Flutterwave Inline (loads safely — no error if key not set yet) -->
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 <script src="auth.js"></script>
 <script>
-  var signinRole = 'dashboard';
+  var signinRole   = 'dashboard';
+  var selectedPlan = null;
+
+  var PLAN_PRICES = { starter: 5000, pro: 25000, business: 60000 };
+  var PLAN_LABELS = { starter: 'Starter', pro: 'Pro', business: 'Business' };
+
+  // ─── REPLACE THIS with your real Flutterwave public key from dashboard.flutterwave.com ───
+  // Get it at: Settings → API Keys → Public Key
+  var FLW_PUBLIC_KEY = 'FLWPUBK_TEST-REPLACE_WITH_YOUR_KEY-X';
 
   // Check URL params
-  var params = new URLSearchParams(window.location.search);
-  if (params.get('tab') === 'signup') switchTab('signup');
-  if (params.get('redirect') === 'kitchen') setSigninRole('kitchen');
+  (function() {
+    var p = new URLSearchParams(window.location.search);
+    if (p.get('tab') === 'signup') switchTab('signup');
+    if (p.get('redirect') === 'kitchen') setSigninRole('kitchen');
+  })();
 
   redirectIfLoggedIn();
 
-  // Enter key on sign in
   ['siEmail','siPassword'].forEach(function(id) {
     document.getElementById(id).addEventListener('keydown', function(e) {
       if (e.key === 'Enter') handleSignIn();
@@ -272,7 +364,45 @@
     document.getElementById('roleSigninKit').classList.toggle('sel',  role === 'kitchen');
   }
 
-  // ── SIGN IN ──
+  // ── Plan selection ──
+  function selectPlan(plan) {
+    selectedPlan = plan;
+    ['starter','pro','business'].forEach(function(p) {
+      var id = 'planCard' + p.charAt(0).toUpperCase() + p.slice(1);
+      document.getElementById(id).classList.toggle('sel', p === plan);
+    });
+    var btn = document.getElementById('planNextBtn');
+    btn.disabled = false;
+    btn.textContent = 'Continue with ' + PLAN_LABELS[plan] + ' \u2192';
+  }
+
+  function goToStep2() {
+    if (!selectedPlan) return;
+    document.getElementById('suStep1').classList.remove('active');
+    document.getElementById('suStep2').classList.add('active');
+    document.getElementById('dot1').classList.remove('active');
+    document.getElementById('dot1').classList.add('done');
+    document.getElementById('dot2').classList.add('active');
+
+    var notice = document.getElementById('suPaymentNotice');
+    if (selectedPlan !== 'starter') {
+      var amount = PLAN_PRICES[selectedPlan].toLocaleString();
+      notice.innerHTML = '\uD83D\uDCB3 <strong>' + PLAN_LABELS[selectedPlan] + ' Plan \u2014 RWF ' + amount + '/month</strong><br>After creating your account you will be prompted to pay via MTN MoMo or card to activate your plan.';
+      notice.style.display = 'block';
+    } else {
+      notice.style.display = 'none';
+    }
+  }
+
+  function backToStep1() {
+    document.getElementById('suStep2').classList.remove('active');
+    document.getElementById('suStep1').classList.add('active');
+    document.getElementById('dot2').classList.remove('active');
+    document.getElementById('dot1').classList.remove('done');
+    document.getElementById('dot1').classList.add('active');
+  }
+
+  // ── Sign In ──
   async function handleSignIn() {
     var email = document.getElementById('siEmail').value.trim();
     var pass  = document.getElementById('siPassword').value;
@@ -293,11 +423,10 @@
     } else {
       showMsg(errEl, result.error || 'Invalid credentials');
       btn.disabled = false;
-      btn.textContent = 'Sign In →';
+      btn.textContent = 'Sign In \u2192';
     }
   }
 
-  // ── DEMO LOGIN ──
   function demoLogin(role) {
     setSigninRole(role);
     document.getElementById('siEmail').value    = role === 'kitchen' ? 'kitchen@chilli.rw' : 'owner@chilli.rw';
@@ -305,7 +434,7 @@
     handleSignIn();
   }
 
-  // ── SIGN UP ──
+  // ── Sign Up ──
   async function handleSignUp() {
     var restName  = document.getElementById('suRestName').value.trim();
     var ownerName = document.getElementById('suOwnerName').value.trim();
@@ -320,51 +449,97 @@
     errEl.classList.remove('show');
     successEl.classList.remove('show');
 
-    // Validation
-    if (!restName)  { showMsg(errEl, 'Please enter your restaurant name.'); return; }
-    if (!ownerName) { showMsg(errEl, 'Please enter your name.'); return; }
-    if (!dashEmail) { showMsg(errEl, 'Please enter a dashboard email.'); return; }
-    if (dashPass.length < 6) { showMsg(errEl, 'Dashboard password must be at least 6 characters.'); return; }
-    if (!kitEmail)  { showMsg(errEl, 'Please enter a kitchen email.'); return; }
-    if (kitPass.length < 6) { showMsg(errEl, 'Kitchen password must be at least 6 characters.'); return; }
-    if (dashEmail === kitEmail) { showMsg(errEl, 'Dashboard and kitchen emails must be different.'); return; }
+    if (!restName)            { showMsg(errEl, 'Please enter your restaurant name.'); return; }
+    if (!ownerName)           { showMsg(errEl, 'Please enter your name.'); return; }
+    if (!dashEmail)           { showMsg(errEl, 'Please enter a dashboard email.'); return; }
+    if (dashPass.length < 6)  { showMsg(errEl, 'Dashboard password must be at least 6 characters.'); return; }
+    if (!kitEmail)            { showMsg(errEl, 'Please enter a kitchen email.'); return; }
+    if (kitPass.length < 6)   { showMsg(errEl, 'Kitchen password must be at least 6 characters.'); return; }
+    if (dashEmail === kitEmail){ showMsg(errEl, 'Dashboard and kitchen emails must be different.'); return; }
 
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span>Creating accounts...';
 
-    // Register dashboard account
     var r1 = await registerUser(dashEmail, dashPass, restName, ownerName, 'dashboard');
     if (!r1.success) {
       showMsg(errEl, 'Dashboard account error: ' + r1.error);
-      btn.disabled = false; btn.textContent = 'Create Both Accounts →';
+      btn.disabled = false; btn.textContent = 'Create Account \u2192';
       return;
     }
 
-    // Register kitchen account
     btn.innerHTML = '<span class="spinner"></span>Creating kitchen account...';
     var r2 = await registerUser(kitEmail, kitPass, restName, ownerName, 'kitchen');
     if (!r2.success) {
       showMsg(errEl, 'Kitchen account error: ' + r2.error);
-      btn.disabled = false; btn.textContent = 'Create Both Accounts →';
+      btn.disabled = false; btn.textContent = 'Create Account \u2192';
       return;
     }
 
-    // Success
+    btn.innerHTML = '<span class="spinner"></span>Setting up restaurant...';
+    var plan = selectedPlan || 'starter';
+    await createRestaurantRecord(restName, ownerName, r1.userId, r2.userId, plan);
+
     btn.disabled = false;
-    btn.textContent = 'Create Both Accounts →';
-    successEl.innerHTML =
-      '✅ <strong>Both accounts created!</strong><br><br>' +
-      '📊 <strong>Dashboard login:</strong> ' + dashEmail + '<br>' +
-      '👨‍🍳 <strong>Kitchen login:</strong> ' + kitEmail + '<br><br>' +
-      'You can now sign in with either account.';
-    successEl.classList.add('show');
-    // Clear form
+    btn.textContent = 'Create Account \u2192';
+
+    // Trigger payment for paid plans if Flutterwave key is configured
+    var keyReady = FLW_PUBLIC_KEY.indexOf('REPLACE') === -1 && FLW_PUBLIC_KEY.length > 20;
+    if (plan !== 'starter' && keyReady) {
+      triggerPayment(dashEmail, restName, plan, function(paid) {
+        showSuccessMsg(successEl, dashEmail, kitEmail, plan, paid);
+      });
+    } else {
+      showSuccessMsg(successEl, dashEmail, kitEmail, plan, false);
+    }
+
     ['suRestName','suOwnerName','suDashEmail','suDashPass','suKitEmail','suKitPass'].forEach(function(id) {
       document.getElementById(id).value = '';
     });
   }
 
-  // ── REGISTER USER via Supabase Auth ──
+  function showSuccessMsg(el, dashEmail, kitEmail, plan, paid) {
+    var payLine = '';
+    if (plan !== 'starter') {
+      payLine = paid
+        ? '<br>\u2705 Payment confirmed \u2014 your <strong>' + PLAN_LABELS[plan] + '</strong> plan is now active.'
+        : '<br>\u26A0\uFE0F Payment not completed. Sign in and activate your plan later.';
+    }
+    el.innerHTML =
+      '\u2705 <strong>Both accounts created!</strong><br><br>' +
+      '\uD83D\uDCCA <strong>Dashboard login:</strong> ' + dashEmail + '<br>' +
+      '\uD83D\uDC68\u200D\uD83C\uDF73 <strong>Kitchen login:</strong> ' + kitEmail + '<br>' +
+      '\uD83C\uDFF7\uFE0F <strong>Plan:</strong> ' + PLAN_LABELS[plan] +
+      payLine + '<br><br>You can now sign in with either account.';
+    el.classList.add('show');
+  }
+
+  // ── Flutterwave Inline Payment ──
+  function triggerPayment(email, restName, plan, callback) {
+    try {
+      FlutterwaveCheckout({
+        public_key:      FLW_PUBLIC_KEY,
+        tx_ref:          'tabletap-' + Date.now(),
+        amount:          PLAN_PRICES[plan],
+        currency:        'RWF',
+        payment_options: 'mobilemoney,card',
+        customer: { email: email, name: restName },
+        customizations: {
+          title:       'Table Tap',
+          description: PLAN_LABELS[plan] + ' Plan \u2014 Monthly Subscription',
+          logo:        'https://tabletap-demo.netlify.app/favicon.ico'
+        },
+        callback: function(response) {
+          callback(response.status === 'successful' || response.status === 'completed');
+        },
+        onclose: function() { callback(false); }
+      });
+    } catch(e) {
+      console.warn('Flutterwave not ready:', e);
+      callback(false);
+    }
+  }
+
+  // ── Register User via Supabase Auth ──
   async function registerUser(email, password, restName, ownerName, role) {
     try {
       var res  = await fetch('https://flcphwyjqawlmclrsitj.supabase.co/auth/v1/signup', {
@@ -374,23 +549,37 @@
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          email: email,
-          password: password,
-          data: {
-            restaurant_name: restName,
-            owner_name: ownerName,
-            role: role
-          }
+          email: email, password: password,
+          data: { restaurant_name: restName, owner_name: ownerName, role: role }
         })
       });
-      var data = await res.json();
-      if (data.user || data.id || (data.email && !data.error)) {
-        return { success: true };
-      }
+      var data   = await res.json();
+      var userId = (data.user && data.user.id) || data.id || null;
+      if (userId || (data.email && !data.error)) return { success: true, userId: userId };
       return { success: false, error: data.msg || data.error_description || data.message || 'Registration failed' };
     } catch(e) {
       return { success: false, error: 'Network error. Please try again.' };
     }
+  }
+
+  // ── Insert Restaurant Row ──
+  async function createRestaurantRecord(restName, ownerName, ownerId, kitchenUserId, plan) {
+    try {
+      var slug = restName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      var res  = await fetch('https://flcphwyjqawlmclrsitj.supabase.co/rest/v1/restaurants', {
+        method: 'POST',
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsY3Bod3lqcWF3bG1jbHJzaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTQ3MzIsImV4cCI6MjA4OTc5MDczMn0.J2FjVGGs2jlC7WeTC1uhYayzSmh2doESx-UiggjNg2E',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsY3Bod3lqcWF3bG1jbHJzaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTQ3MzIsImV4cCI6MjA4OTc5MDczMn0.J2FjVGGs2jlC7WeTC1uhYayzSmh2doESx-UiggjNg2E',
+          'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          restaurant_id: slug, restaurant_name: restName, owner_name: ownerName,
+          owner_id: ownerId, kitchen_user_id: kitchenUserId, plan: plan || 'starter'
+        })
+      });
+      return res.ok;
+    } catch(e) { console.error('Restaurant insert error:', e); return false; }
   }
 
   // ── Password strength ──
@@ -398,20 +587,13 @@
     var pw   = input.value;
     var bars = document.querySelectorAll('#' + barId + ' .pw-bar');
     bars.forEach(function(b) { b.className = 'pw-bar'; });
-    if (pw.length === 0) return;
-    if (pw.length < 6) {
-      bars[0].classList.add('weak');
-    } else if (pw.length < 10) {
-      bars[0].classList.add('ok'); bars[1].classList.add('ok');
-    } else {
-      bars.forEach(function(b) { b.classList.add('strong'); });
-    }
+    if (!pw.length) return;
+    if (pw.length < 6)       { bars[0].classList.add('weak'); }
+    else if (pw.length < 10) { bars[0].classList.add('ok'); bars[1].classList.add('ok'); }
+    else                     { bars.forEach(function(b) { b.classList.add('strong'); }); }
   }
 
-  function showMsg(el, msg) {
-    el.textContent = msg;
-    el.classList.add('show');
-  }
+  function showMsg(el, msg) { el.textContent = msg; el.classList.add('show'); }
 </script>
 </body>
 </html>

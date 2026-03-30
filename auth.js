@@ -1,10 +1,8 @@
 // ── auth.js ── Table Tap Authentication
-// Supports separate roles: dashboard owner vs kitchen staff
 
 const AUTH_URL = 'https://flcphwyjqawlmclrsitj.supabase.co';
 const AUTH_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsY3Bod3lqcWF3bG1jbHJzaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTQ3MzIsImV4cCI6MjA4OTc5MDczMn0.J2FjVGGs2jlC7WeTC1uhYayzSmh2doESx-UiggjNg2E';
 
-// ── Sign In ──
 async function signIn(email, password) {
   var res  = await fetch(AUTH_URL + '/auth/v1/token?grant_type=password', {
     method: 'POST',
@@ -16,16 +14,50 @@ async function signIn(email, password) {
     localStorage.setItem('tt_token',   data.access_token);
     localStorage.setItem('tt_refresh', data.refresh_token);
     localStorage.setItem('tt_email',   email);
-    // Store role based on email
-    // kitchen staff use emails ending in @kitchen.tabletap or containing 'kitchen'
     var role = (email.toLowerCase().indexOf('kitchen') !== -1) ? 'kitchen' : 'dashboard';
     localStorage.setItem('tt_role', role);
+    // Decode user ID from JWT
+    try {
+      var payload = JSON.parse(atob(data.access_token.split('.')[1]));
+      localStorage.setItem('tt_uid', payload.sub);
+      // Fetch restaurant profile
+      await _fetchRestaurantProfile(payload.sub, data.access_token, role);
+    } catch(e) {}
     return { success: true, role: role };
   }
   return { success: false, error: data.error_description || 'Invalid email or password' };
 }
 
-// ── Sign Out ──
+async function _fetchRestaurantProfile(userId, token, role) {
+  try {
+    // Try owner lookup
+    var field = role === 'kitchen' ? 'kitchen_user_id' : 'owner_id';
+    var res   = await fetch(
+      AUTH_URL + '/rest/v1/restaurants?' + field + '=eq.' + userId + '&limit=1',
+      { headers: { 'apikey': AUTH_KEY, 'Authorization': 'Bearer ' + token } }
+    );
+    var data  = await res.json();
+    if (data && data.length) {
+      localStorage.setItem('tt_restaurant_id',   data[0].restaurant_id);
+      localStorage.setItem('tt_restaurant_name', data[0].restaurant_name);
+      localStorage.setItem('tt_plan',            data[0].plan || 'starter');
+      return;
+    }
+    // Fallback — try other field
+    var field2 = role === 'kitchen' ? 'owner_id' : 'kitchen_user_id';
+    var res2   = await fetch(
+      AUTH_URL + '/rest/v1/restaurants?' + field2 + '=eq.' + userId + '&limit=1',
+      { headers: { 'apikey': AUTH_KEY, 'Authorization': 'Bearer ' + token } }
+    );
+    var data2  = await res2.json();
+    if (data2 && data2.length) {
+      localStorage.setItem('tt_restaurant_id',   data2[0].restaurant_id);
+      localStorage.setItem('tt_restaurant_name', data2[0].restaurant_name);
+      localStorage.setItem('tt_plan',            data2[0].plan || 'starter');
+    }
+  } catch(e) {}
+}
+
 async function signOut() {
   var token = localStorage.getItem('tt_token');
   if (token) {
@@ -36,63 +68,39 @@ async function signOut() {
       });
     } catch(e) {}
   }
-  localStorage.removeItem('tt_token');
-  localStorage.removeItem('tt_refresh');
-  localStorage.removeItem('tt_email');
-  localStorage.removeItem('tt_role');
+  ['tt_token','tt_refresh','tt_email','tt_role','tt_uid','tt_restaurant_id','tt_restaurant_name','tt_plan'].forEach(function(k) {
+    localStorage.removeItem(k);
+  });
   window.location.href = 'login.html';
 }
 
-// ── Get current user ──
-function getCurrentUser() { return localStorage.getItem('tt_email'); }
-function getToken()       { return localStorage.getItem('tt_token'); }
-function getCurrentRole() { return localStorage.getItem('tt_role') || 'dashboard'; }
+function getCurrentUser()     { return localStorage.getItem('tt_email'); }
+function getToken()           { return localStorage.getItem('tt_token'); }
+function getCurrentRole()     { return localStorage.getItem('tt_role') || 'dashboard'; }
+function getRestaurantId()    { return localStorage.getItem('tt_restaurant_id') || 'chilli-restaurant'; }
+function getRestaurantName()  { return localStorage.getItem('tt_restaurant_name') || 'Restaurant'; }
 
-// ── Require auth — redirect to login if not signed in ──
+function getPlan()           { return localStorage.getItem('tt_plan') || 'starter'; }
+
 function requireAuth() {
-  if (!localStorage.getItem('tt_token')) {
-    window.location.href = 'login.html';
-    return false;
-  }
+  if (!localStorage.getItem('tt_token')) { window.location.href = 'login.html'; return false; }
   return true;
 }
 
-// ── Require dashboard role ──
-// Call on dashboard.html — redirects kitchen staff away
 function requireDashboardAuth() {
-  if (!localStorage.getItem('tt_token')) {
-    window.location.href = 'login.html?redirect=dashboard';
-    return false;
-  }
-  var role = localStorage.getItem('tt_role');
-  if (role === 'kitchen') {
-    // Kitchen staff trying to access dashboard — redirect them
-    window.location.href = 'kitchen.html';
-    return false;
-  }
+  if (!localStorage.getItem('tt_token')) { window.location.href = 'login.html?redirect=dashboard'; return false; }
+  if (localStorage.getItem('tt_role') === 'kitchen') { window.location.href = 'kitchen.html'; return false; }
   return true;
 }
 
-// ── Require kitchen role ──
-// Call on kitchen.html — redirects dashboard owners away
 function requireKitchenAuth() {
-  if (!localStorage.getItem('tt_token')) {
-    window.location.href = 'login.html?redirect=kitchen';
-    return false;
-  }
-  var role = localStorage.getItem('tt_role');
-  if (role === 'dashboard') {
-    // Dashboard owner trying to access kitchen — redirect them
-    window.location.href = 'dashboard.html';
-    return false;
-  }
+  if (!localStorage.getItem('tt_token')) { window.location.href = 'login.html?redirect=kitchen'; return false; }
+  if (localStorage.getItem('tt_role') === 'dashboard') { window.location.href = 'dashboard.html'; return false; }
   return true;
 }
 
-// ── Redirect if already logged in ──
 function redirectIfLoggedIn() {
   var token = localStorage.getItem('tt_token');
   if (!token) return;
-  var role  = localStorage.getItem('tt_role') || 'dashboard';
-  window.location.href = role === 'kitchen' ? 'kitchen.html' : 'dashboard.html';
+  window.location.href = localStorage.getItem('tt_role') === 'kitchen' ? 'kitchen.html' : 'dashboard.html';
 }

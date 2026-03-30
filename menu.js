@@ -3,7 +3,8 @@
 
 const MENU_SUPABASE_URL = 'https://flcphwyjqawlmclrsitj.supabase.co/rest/v1/orders';
 const MENU_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsY3Bod3lqcWF3bG1jbHJzaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTQ3MzIsImV4cCI6MjA4OTc5MDczMn0.J2FjVGGs2jlC7WeTC1uhYayzSmh2doESx-UiggjNg2E';
-const RESTAURANT_ID     = 'chilli-restaurant';
+var urlParams_menu  = new URLSearchParams(window.location.search);
+var RESTAURANT_ID   = urlParams_menu.get('r') || 'chilli-restaurant';
 
 // ── Cart ──
 var cart = [];
